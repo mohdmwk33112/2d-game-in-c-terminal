@@ -1,0 +1,4437 @@
+#include <iostream>
+#include <conio.h>
+using namespace std;
+struct Map
+{
+	int map, Item[10], ItemRow[10], ItemCol[10], Door[20], DoorRow[20], DoorCol[20], Place, Cursor, Diff, Level[5];
+	Map()
+	{
+		map = 0, Place = 1, Cursor = 9, Diff = 1;
+		for (int i = 0; i < 5; i++)
+		{
+			Level[i] = 0;
+		}
+	}
+	void GenMap(char x[][400], int& laser, int& movetimer, int& elestate)
+	{
+		int r, c, m, f;
+		if (map == 5)
+		{
+			//Emptying the cells
+			for (r = 0; r < 105; r++)
+			{
+				for (c = 0; c < 400; c++)
+				{
+					x[r][c] = ' ';
+				}
+			}
+			//Borders
+			for (r = 0; r < 42; r++)
+			{
+				x[r][0] = '*';
+				x[r][159] = '*';
+			}
+			for (c = 0; c < 160; c++)
+			{
+				x[0][c] = '*';
+				x[41][c] = '*';
+			}
+			//Pyramid system
+			r = 0;
+			m = 0;
+			for (f = 0; f < 7; f++)
+			{
+				for (c = 6 + r; c < 21 + r; c++)
+				{
+					x[38 - m][c] = '*';
+				}
+				for (c = 153 - r; c >= 138 - r; c--)
+				{
+					x[38 - m][c] = '*';
+				}
+				r += 10;
+				m += 4;
+			}
+		}
+		if (map == 9)
+		{
+			//Emptying the cells
+			for (r = 0; r < 105; r++)
+			{
+				for (c = 0; c < 400; c++)
+				{
+					x[r][c] = ' ';
+				}
+			}
+			for (c=20; c<24; c++)
+			{
+				x[103][c] = '*';
+				x[102][c] = '*';
+				x[101][c] = '*';
+				x[100][c] = '*';
+			}
+			for (c=23; c<27; c++)
+			{
+				x[97][c] = '*';
+				x[96][c] = '*';
+				x[95][c] = '*';
+				x[94][c] = '*';
+			}
+			//Borders
+			for (r = 0; r < 105; r++)
+			{
+				x[r][0] = '*';
+				x[r][399] = '*';
+			}
+			for (c = 0; c < 400; c++)
+			{
+				x[0][c] = '*';
+				x[104][c] = '*';
+			}
+			//Building 1
+			for (r = 66; r < 102; r++)
+			{
+				x[r][52] = '*';
+				x[r][107] = '*';
+			}
+			for (c = 52; c < 108; c++)
+			{
+				x[66][c] = '*';
+			}
+			//Building 2
+			for (r = 82; r < 102; r++)
+			{
+				x[r][127] = '*';
+				x[r][240] = '*';
+			}
+			for (c = 127; c < 241; c++)
+			{
+				x[82][c] = '*';
+			}
+			//Building 3
+			for (r = 77; r < 102; r++)
+			{
+				x[r][280] = '*';
+				x[r][360] = '*';
+			}
+			for (c = 280; c < 360; c++)
+			{
+				x[77][c] = '*';
+			}
+			//The Hatch
+			for (r = 103; r < 105; r++)
+			{
+				x[r][380] = '*';
+				x[r][393] = '*';
+			}
+			for (c = 381; c < 393; c++)
+			{
+				x[103][c] = '-';
+			}
+			DoorRow[0] = 103;
+			DoorCol[0] = 52;
+			DoorRow[1] = 102;
+			DoorCol[1] = 52;
+			DoorRow[2] = 103;
+			DoorCol[2] = 107;
+			DoorRow[3] = 102;
+			DoorCol[3] = 107;
+			DoorRow[4] = 103;
+			DoorCol[4] = 127;
+			DoorCol[5] = 102;
+			DoorRow[5] = 127;
+			DoorRow[6] = 103;
+			DoorCol[6] = 240;
+			DoorRow[7] = 102;
+			DoorCol[7] = 240;
+			DoorRow[8] = 103;
+			DoorCol[8] = 280;
+			DoorRow[9] = 102;
+			DoorCol[9] = 280;
+			DoorRow[10] = 103;
+			DoorCol[10] = 360;
+			DoorRow[11] = 102;
+			DoorCol[11] = 360;
+			for (r = 0; r < 5; r++)
+			{
+				if (Door[r] == 1)
+				{
+					x[DoorRow[r]][DoorCol[r]] = '|';
+				}
+				if (Door[r] == 0)
+				{
+					x[DoorRow[r]][DoorCol[r]] = ' ';
+				}
+			}
+		}
+		if (map == -3)
+		{
+			for (r = 0; r < 21; r++)
+			{
+				for (c = 0; c < 80; c++)
+				{
+					x[r][c] = ' ';
+				}
+			}
+			for (r = 0; r < 21; r++)
+			{
+				x[r][0] = '*';
+				x[r][79] = '*';
+			}
+			for (c = 0; c < 80; c++)
+			{
+				x[0][c] = '*';
+				x[20][c] = '*';
+			}
+			x[10][34] = 'Y';
+			x[10][35] = 'O';
+			x[10][36] = 'U';
+			x[10][37] = ' ';
+			x[10][38] = 'A';
+			x[10][39] = 'R';
+			x[10][40] = 'E';
+			x[10][41] = ' ';
+			x[10][42] = 'D';
+			x[10][43] = 'E';
+			x[10][44] = 'A';
+			x[10][45] = 'D';
+			////////////////////////
+			x[15][28] = 'P';
+			x[15][29] = 'R';
+			x[15][30] = 'E';
+			x[15][31] = 'S';
+			x[15][32] = 'S';
+			x[15][33] = ' ';
+			x[15][34] = 'A';
+			x[15][35] = 'N';
+			x[15][36] = 'Y';
+			x[15][37] = ' ';
+			x[15][38] = 'K';
+			x[15][39] = 'E';
+			x[15][40] = 'Y';
+			x[15][41] = ' ';
+			x[15][42] = 'T';
+			x[15][43] = 'O';
+			x[15][44] = ' ';
+			x[15][45] = 'R';
+			x[15][46] = 'E';
+			x[15][47] = 'S';
+			x[15][48] = 'T';
+			x[15][49] = 'A';
+			x[15][50] = 'R';
+			x[15][51] = 'T';
+		}
+		if (map == -2)
+		{
+			for (r = 0; r < 105; r++)
+			{
+				for (c = 0; c < 400; c++)
+				{
+					x[r][c] = ' ';
+				}
+			}
+			for (r = 0; r < 21; r++)
+			{
+				x[r][0] = '*';
+				x[r][79] = '*';
+			}
+			for (c = 0; c < 80; c++)
+			{
+				x[0][c] = '*';
+				x[20][c] = '*';
+			}
+			x[Cursor][24] = '>';
+			x[9][26] = 'D';
+			x[9][27] = 'i';
+			x[9][28] = 'f';
+			x[9][29] = 'f';
+			x[9][30] = 'i';
+			x[9][31] = 'c';
+			x[9][32] = 'u';
+			x[9][33] = 'l';
+			x[9][34] = 't';
+			x[9][35] = 'y';
+			x[9][36] = ':';
+			if (Diff == 1)
+			{
+				x[9][37] = '1';
+			}
+			if (Diff == 2)
+			{
+				x[9][37] = '2';
+			}
+			if (Diff == 4)
+			{
+				x[9][37] = '4';
+			}
+			x[11][26] = '<';
+			x[11][27] = ' ';
+			x[11][28] = 'B';
+			x[11][29] = 'a';
+			x[11][30] = 'c';
+			x[11][31] = 'k';
+		}
+		if (map == -1)
+		{
+			for (r = 0; r < 105; r++)
+			{
+				for (c = 0; c < 400; c++)
+				{
+					x[r][c] = ' ';
+				}
+			}
+			for (r = 0; r < 21; r++)
+			{
+				x[r][0] = '*';
+				x[r][79] = '*';
+			}
+			for (c = 0; c < 80; c++)
+			{
+				x[0][c] = '*';
+				x[20][c] = '*';
+			}
+			x[9][35] = 'L';
+			x[9][36] = 'o';
+			x[9][37] = 'a';
+			x[9][38] = 'd';
+			x[9][39] = 'i';
+			x[9][40] = 'n';
+			x[9][41] = 'g';
+			x[9][42] = '.';
+			x[9][43] = '.';
+			x[9][44] = '.';
+		}
+		if (map == 0)
+		{
+			for (r = 0; r < 21; r++)
+			{
+				for (c = 0; c < 80; c++)
+				{
+					x[r][c] = ' ';
+				}
+			}
+			for (r = 0; r < 21; r++)
+			{
+				x[r][0] = '*';
+				x[r][79] = '*';
+			}
+			for (c = 0; c < 80; c++)
+			{
+				x[0][c] = '*';
+				x[20][c] = '*';
+			}
+			x[Cursor][24] = '>';
+			x[9][26] = 'S';
+			x[9][27] = 'T';
+			x[9][28] = 'A';
+			x[9][29] = 'R';
+			x[9][30] = 'T';
+			x[11][26] = 'O';
+			x[11][27] = 'P';
+			x[11][28] = 'T';
+			x[11][29] = 'I';
+			x[11][30] = 'O';
+			x[11][31] = 'N';
+			x[11][32] = 'S';
+			x[13][26] = 'E';
+			x[13][27] = 'X';
+			x[13][28] = 'I';
+			x[13][29] = 'T';
+		}
+		if (map == 1)
+		{
+			//loops to generate map and borders//
+			for (r = 0; r < 105; r++)
+			{
+				for (c = 0; c < 400; c++)
+				{
+					x[r][c] = ' ';
+				}
+			}
+			for (r = 1; r < 21; r++)
+			{
+				x[r][0] = '*';
+				x[r][79] = '*';
+			}
+			for (c = 0; c < 80; c++)
+			{
+				x[1][c] = '*';
+				x[20][c] = '*';
+			}
+			/////////////////////////
+			for (c = 1; c < 16; c++)
+			{
+				//lower platform on left
+				x[10][c] = '*';
+				x[11][c] = '*';
+				//almost mirrored version on the right
+				x[10][65 - c] = '*';
+				x[11][65 - c] = '*';
+				x[10][79 - c] = '*';
+				x[11][79 - c] = '*';
+				//top platform on left
+				x[8][c + 22] = '*';
+				x[7][c + 22] = '*';
+				//mirrored version on the right
+				x[5][79 - (c + 18)] = '*';
+				x[6][79 - (c + 18)] = '*';
+			}
+			//Main box at the bottom//
+			for (r = 15; r < 19; r++)
+			{
+				x[r][27] = '*';
+				x[r][50] = '*';
+			}
+			for (c = 27; c < 50; c++)
+			{
+				x[15][c] = '*';
+				x[18][c] = '*';
+			}
+			/////////////////////////
+			//top pillar
+			for (r = 1; r < 3; r++)
+			{
+				x[r][50] = '*';
+				x[r][51] = '*';
+				x[r][52] = '*';
+			}
+			//bottom pillar
+			for (r = 11; r < 18; r++)
+			{
+				x[r][60] = '*';
+				x[r][61] = '*';
+				x[r][62] = '*';
+			}
+			//Top door
+			DoorRow[0] = 3;
+			DoorCol[0] = 51;
+			DoorRow[1] = 4;
+			DoorCol[1] = 51;
+			//Bottom door
+			DoorRow[2] = 18;
+			DoorCol[2] = 61;
+			DoorRow[3] = 19;
+			DoorCol[3] = 61;
+			for (r = 0; r < 4; r++)
+			{
+				if (Door[r] == 1)
+				{
+					x[DoorRow[r]][DoorCol[r]] = '|';
+				}
+				if (Door[r] == 0)
+				{
+					x[DoorRow[r]][DoorCol[r]] = ' ';
+				}
+			}
+			//Left Box //////
+			x[9][10] = '*';
+			x[9][11] = '*';
+			/////////////////
+			//Top Box //////
+			x[6][30] = '*';
+			x[6][29] = '*';
+			/////////////////
+			//Pick Ups//////
+			ItemRow[0] = 19;
+			ItemCol[0] = 44;
+			ItemRow[1] = 19;
+			ItemCol[1] = 76;
+			ItemRow[2] = 9;
+			ItemCol[2] = 76;
+			ItemRow[3] = 9;
+			ItemCol[3] = 3;
+			ItemRow[4] = 4;
+			ItemCol[4] = 48;
+			for (r = 0; r < 5; r++)
+			{
+				if (Item[r] == 1)
+				{
+					x[ItemRow[r]][ItemCol[r]] = '+';
+				}
+				if (Item[r] == 2)
+				{
+					x[ItemRow[r]][ItemCol[r]] = '&';
+				}
+				if (Item[r] == 3)
+				{
+					x[ItemRow[r]][ItemCol[r]] = '%';
+				}
+				if (Item[r] == 0)
+				{
+					x[ItemRow[r]][ItemCol[r]] = ' ';
+				}
+			}
+			for (c = 30; c < 45; c++)
+			{
+				x[11][c] = '*';
+			}
+		}
+		if (map == 2)
+		{
+			//loops to generate map and borders//
+			for (r = 0; r < 105; r++)
+			{
+				for (c = 0; c < 400; c++)
+				{
+					x[r][c] = ' ';
+				}
+			}
+			for (r = 1; r < 21; r++)
+			{
+				x[r][0] = '*';
+				x[r][79] = '*';
+			}
+			for (c = 0; c < 80; c++)
+			{
+				x[1][c] = '*';
+				x[20][c] = '*';
+			}
+			/////////////////////////
+			//Main box at the Top left//
+			for (r = 3; r < 7; r++)
+			{
+				x[r][8] = '*';
+			}
+			for (c = 1; c < 9; c++)
+			{
+				x[3][c] = '*';
+				x[7][c] = '*';
+			}
+			/////////////////////////
+			//Platform connecting to main box
+			for (c = 9; c < 43; c++)
+			{
+				x[6][c] = '*';
+				x[7][c] = '*';
+			}
+			//Platform under the box directly
+			for (c = 0; c < 10; c++)
+			{
+				x[10][c] = '*';
+			}
+			//Room under Main area///
+			for (c = 14; c < 43; c++)
+			{
+				x[13][c] = '*';
+				x[14][c] = '*';
+			}
+			for (r = 6; r < 18; r++)
+			{
+				x[r][42] = '*';
+				x[r][43] = '*';
+			}
+			/////////////////////
+			//The starting platforms
+			for (c = 0; c < 9; c++)
+			{
+				x[4][46 + c] = '*';
+				x[8][44 + c] = '*';
+				x[8][56 + c] = '*';
+				x[4][56 + c] = '*';
+			}
+			x[4][66] = '*';
+			x[4][69] = '*';
+			x[4][54] = ' ';
+			/////////////////////
+			//The platform's wall and floor
+			for (r = 4; r < 15; r++)
+			{
+				x[r][64] = '*';
+				x[r][65] = '*';
+			}
+			for (c = 65; c > 50; c--)
+			{
+				x[14][c] = '*';
+				x[15][c] = '*';
+			}
+			//the bottom boxes/////
+			//Box 1
+			for (r = 19; r < 21; r++)
+			{
+				x[r][65] = '*';
+				x[r][53] = '*';
+			}
+			for (c = 53; c < 66; c++)
+			{
+				x[18][c] = '*';
+			}
+			//Box 3
+			for (r = 17; r < 21; r++)
+			{
+				x[r][17] = '*';
+				x[r][30] = '*';
+			}
+			for (c = 17; c < 30; c++)
+			{
+				x[17][c] = '*';
+			}
+			//Box 4
+			for (r = 15; r < 21; r++)
+			{
+				x[r][6] = '*';
+			}
+			for (c = 0; c < 6; c++)
+			{
+				x[15][c] = '*';
+			}
+			//Right side platforms
+			for (r = 3; r < 20; r++)
+			{
+				c = 67;
+				x[r][c] = 'H';
+			}
+			//Pick Ups//////
+			ItemRow[0] = 2;
+			ItemCol[0] = 2;
+			ItemRow[1] = 9;
+			ItemCol[1] = 3;
+			ItemRow[2] = 13;
+			ItemCol[2] = 61;
+			ItemRow[3] = 7;
+			ItemCol[3] = 59;
+			ItemRow[4] = 19;
+			ItemCol[4] = 31;
+			for (r = 0; r < 5; r++)
+			{
+				if (Item[r] == 1)
+				{
+					x[ItemRow[r]][ItemCol[r]] = '+';
+				}
+				if (Item[r] == 2)
+				{
+					x[ItemRow[r]][ItemCol[r]] = '&';
+				}
+				if (Item[r] == 3)
+				{
+					x[ItemRow[r]][ItemCol[r]] = '%';
+				}
+				if (Item[r] == 0)
+				{
+					x[ItemRow[r]][ItemCol[r]] = ' ';
+				}
+			}
+		}
+		if (map == 3)
+		{
+			//loops to generate map and borders//
+			for (r = 0; r < 105; r++)
+			{
+				for (c = 0; c < 400; c++)
+				{
+					x[r][c] = ' ';
+				}
+			}
+			for (r = 0; r < 21; r++)
+			{
+				x[r][0] = '*';
+				x[r][79] = '*';
+			}
+			for (c = 0; c < 80; c++)
+			{
+				x[1][c] = '*';
+				x[20][c] = '*';
+			}
+			/////////////////////////
+			//Starting area
+			for (r = 18; r < 21; r++)
+			{
+				for (c = 65; c < 80; c++)
+				{
+					x[r][c] = '*';
+				}
+			}
+			//platforms above start
+			for (c = 70; c < 80; c++)
+			{
+				x[15][c] = '*';
+				x[14][c] = '*';
+			}
+			for (c = 6; c < 63; c++)
+			{
+				x[15][c] = '*';
+				x[14][c] = '*';
+			}
+			//first wall on the left, bottom
+			for (r = 10; r < 18; r++)
+			{
+				x[r][40] = '*';
+				x[r][39] = '*';
+				x[r][38] = '*';
+			}
+			//Mid side platforms
+			for (c = 27; c < 53; c++)
+			{
+				x[9][c] = '*';
+				x[8][c] = '*';
+			}
+			//Left mid platform
+			for (c = 5; c < 23; c++)
+			{
+				x[8][c] = '*';
+			}
+			//Right mid platform
+			for (c = 57; c < 66; c++)
+			{
+				x[9][c] = '*';
+				x[8][c] = '*';
+			}
+			//Box connecting Right mid platform
+			for (r = 5; r < 8; r++)
+			{
+				for (c = 66; c < 80; c++)
+				{
+					x[r][c] = '*';
+				}
+			}
+			//Top door
+			DoorRow[0] = 6;
+			DoorCol[0] = 39;
+			DoorRow[1] = 7;
+			DoorCol[1] = 39;
+			//Bottom door
+			DoorRow[2] = 18;
+			DoorCol[2] = 39;
+			DoorRow[3] = 19;
+			DoorCol[3] = 39;
+			for (r = 0; r < 4; r++)
+			{
+				if (Door[r] == 1)
+				{
+					x[DoorRow[r]][DoorCol[r]] = '|';
+				}
+				if (Door[r] == 0)
+				{
+					x[DoorRow[r]][DoorCol[r]] = ' ';
+				}
+			}
+			//upper pillar
+			for (r = 3; r < 6; r++)
+			{
+				x[r][39] = '*';
+				x[r][40] = '*';
+				x[r][38] = '*';
+			}
+			//Platform connecting upper pillar, left then right
+			for (c = 40; c < 60; c++)
+			{
+				x[4][c] = '*';
+				x[3][c] = '*';
+			}
+			for (c = 0; c < 40; c++)
+			{
+				x[4][c] = '*';
+				x[3][c] = '*';
+			}
+			for (c = 7; c < 12; c++)
+			{
+				x[3][c] = ' ';
+				x[4][c] = ' ';
+				x[8][c] = ' ';
+			}
+			if (elestate == 1)
+			{
+				for (c = 7; c < 12; c++)
+				{
+					x[3 + movetimer][c] = '-';
+				}
+				movetimer++;
+				if (movetimer == 11)
+				{
+					elestate = 0;
+					movetimer = 0;
+				}
+			}
+			if (elestate == 0)
+			{
+				for (c = 7; c < 12; c++)
+				{
+					x[13 - movetimer][c] = '-';
+				}
+				movetimer++;
+				if (movetimer == 11)
+				{
+					elestate = 1;
+					movetimer = 0;
+				}
+			}
+		}
+		if (map == 4)
+		{
+			int r, c;
+			//loops to generate map and borders//
+			for (r = 0; r < 105; r++)
+			{
+				for (c = 0; c < 400; c++)
+				{
+					x[r][c] = ' ';
+				}
+			}
+			for (r = 1; r < 21; r++)
+			{
+				x[r][0] = '*';
+				x[r][79] = '*';
+			}
+			for (c = 0; c < 80; c++)
+			{
+				x[1][c] = '*';
+				x[20][c] = '*';
+			}
+			/////////////////////////
+			//Starting area top right corner
+			for (c = 70; c < 73; c++)
+			{
+				x[1][c] = '*';
+				x[2][c] = '*';
+			}
+			////
+			for (c = 70; c < 80; c++)
+			{
+				x[5][c] = '*';
+				x[6][c] = '*';
+			}
+			//Platform under starting area
+			for (c = 55; c < 80; c++)
+			{
+				x[8][c] = '*';
+				x[9][c] = '*';
+			}
+			//Metal box on platform
+			for (r = 6; r < 8; r++)
+			{
+				x[r][60] = '#';
+				x[r][61] = '#';
+			}
+			//Door under it
+			for (c = 55; c < 58; c++)
+			{
+				x[10][c] = '*';
+			}
+			//Platform under door
+			for (c = 54; c < 75; c++)
+			{
+				x[13][c] = '*';
+				x[14][c] = '*';
+			}
+			//Long room at the very bottom////
+			for (c = 20; c < 65; c++)
+			{
+				x[14][c] = '*';
+				x[15][c] = '*';
+			}
+			//room frames
+			for (r = 0; r < 3; r++)
+			{
+				x[16][20 + r] = '*';
+				x[16][41 + r] = '*';
+				x[16][62 + r] = '*';
+				x[17][20 + r] = '*';
+				x[17][41 + r] = '*';
+				x[17][62 + r] = '*';
+			}
+			//Obstacles
+			/////////////////////////
+			//Room on the left side////
+			for (c = 1; c < 23; c++)
+			{
+				x[10][c] = '*';
+				x[11][c] = '*';
+			}
+			for (c = 6; c < 21; c++)
+			{
+				x[4][c] = '*';
+				x[5][c] = '*';
+			}
+			for (c = 18; c < 21; c++)
+			{
+				x[6][c] = '*';
+				x[7][c] = '*';
+			}
+			///////////////
+			//Vent above left room
+			for (c = 13; c < 57; c++)
+			{
+				x[4][c] = '*';
+
+			}
+			for (c = 10; c < 54; c++)
+			{
+				x[2][c] = '*';
+			}
+			DoorRow[0] = 8;
+			DoorCol[0] = 19;
+			DoorRow[1] = 9;
+			DoorCol[1] = 19;
+			DoorRow[2] = 18;
+			DoorCol[2] = 21;
+			DoorRow[3] = 19;
+			DoorCol[3] = 21;
+			DoorRow[4] = 18;
+			DoorCol[4] = 42;
+			DoorRow[5] = 19;
+			DoorCol[5] = 42;
+			DoorRow[6] = 18;
+			DoorCol[6] = 63;
+			DoorRow[7] = 11;
+			DoorCol[7] = 56;
+			DoorRow[8] = 12;
+			DoorCol[8] = 56;
+			DoorRow[9] = 3;
+			DoorCol[9] = 71;
+			DoorRow[10] = 4;
+			DoorCol[10] = 71;
+			DoorRow[11] = 19;
+			DoorCol[11] = 63;
+			for (r = 0; r < 12; r++)
+			{
+				if (Door[r] == 1)
+				{
+					x[DoorRow[r]][DoorCol[r]] = '|';
+				}
+				if (Door[r] == 0)
+				{
+					x[DoorRow[r]][DoorCol[r]] = ' ';
+				}
+			}
+			//laser control panel
+			x[8][1] = '&';
+			x[9][1] = '&';
+			//laser
+			if (laser == 1)
+			{
+				for (r = 5; r < 14; r += 2)
+				{
+					x[r][35] = ']';
+				}
+				for (r = 6; r < 13; r += 2)
+				{
+					x[r][35] = '[';
+				}
+			}
+			x[18][5] = '0';
+			x[19][5] = '0';
+		}
+	}
+	void MenuControls(char x[][400], char inpt, int& nextmap)
+	{
+		if (inpt == 'w')
+		{
+			if (Cursor > 9)
+			{
+				Cursor -= 2;
+			}
+		}
+		if (inpt == 's')
+		{
+			if (Cursor < 13)
+			{
+				Cursor += 2;
+			}
+		}
+		if (inpt == 'e')
+		{
+			if (map == 0)
+			{
+				if (Cursor == 9)
+				{
+					nextmap = 9;
+					map = -1;
+				}
+				if (Cursor == 13)
+				{
+
+				}
+				if (Cursor == 11)
+				{
+					map = -2;
+					return;
+				}
+			}
+			if (map == -2)
+			{
+				if (Cursor == 9)
+				{
+					if (Diff == 1)
+					{
+						Diff++;
+						return;
+					}
+					if (Diff == 2)
+					{
+						Diff += 2;
+						return;
+					}
+					if (Diff == 4)
+					{
+						Diff = 1;
+						return;
+					}
+				}
+				if (Cursor == 11)
+				{
+					map = 0;
+				}
+			}
+		}
+	}
+	void Stage(int& NumEnemy, int& boss, int hpboss, int& Checkpoint, int& ce, int bosslimit)
+	{
+		if (NumEnemy < 1 && boss == 0 && bosslimit == 0)
+		{
+			Checkpoint++;
+			boss = map;
+		}
+		if (NumEnemy < 1 && hpboss < 1 && bosslimit == 1);
+		{
+			Level[map - 1] = 1;
+		}
+	}
+};
+void Disp(char x[][400])
+{
+	for (int r = 0; r < 21; r++)
+	{
+		for (int c = 0; c < 80; c++)
+		{
+			cout << x[r][c];
+		}
+	}
+}
+void DispScroll(char x[][400], int rhero, int chero)
+{
+	int cs = chero - 39, ce = chero + 40, rs = rhero - 10, re = rhero + 10, r, c;
+	if (rhero + 10 > 104)
+	{
+		rs = 84;
+		re = 104;
+	}
+	if (chero - 39 < 0)
+	{
+		cs = 0;
+		ce = 79;
+	}
+	if (rhero - 10 < 0)
+	{
+		rs = 0;
+		re = 20;
+	}
+	if (chero + 40 > 399)
+	{
+		cs = 320;
+		ce = 399;
+	}
+	for (r = rs; r <= re; r++)
+	{
+		for (c = cs; c <= ce; c++)
+		{
+			cout << x[r][c];
+		}
+	}
+}
+struct Enemy
+{
+	int renemyp, cenemyp, dire, cr, shoote, rbullet, cbullet, mv, ewe, dirb, dirm, walke, hp, stat, diff;
+	Enemy()
+	{
+		renemyp, cenemyp, dire = -1, cr = 0, shoote = 0, rbullet, cbullet, mv = 0, ewe = 0, dirb = 0, dirm = -1, walke = 1, hp = 100, stat = 1, diff;
+	}
+	void DrawEnemy(char x[][400])
+	{
+		if (stat == 1)
+		{
+			x[renemyp][cenemyp] = 'O';
+			if (walke == 1)
+			{
+				x[renemyp + 1][cenemyp] = 239;
+			}
+			else
+			{
+				x[renemyp + 1][cenemyp] = 124;
+			}
+			if (dire == -1)
+			{
+				x[renemyp][cenemyp - 1] = 170;
+			}
+			if (dire == 1)
+			{
+				x[renemyp][cenemyp + 1] = 169;
+			}
+			if (dire == 2)
+			{
+				x[renemyp - 1][cenemyp] = 192;
+			}
+			if (dire == 3)
+			{
+				x[renemyp - 1][cenemyp + 1] = '<';
+			}
+			if (dire == -3)
+			{
+				x[renemyp - 1][cenemyp - 1] = '>';
+			}
+			if (dire == -4)
+			{
+				x[renemyp + 1][cenemyp - 1] = 94;
+			}
+			if (dire == 4)
+			{
+				x[renemyp + 1][cenemyp + 1] = 94;
+			}
+		}
+	}
+	void EnemyAction(char x[][400])
+	{
+		if (stat == 1)
+		{
+			if (mv == 1)
+			{
+				if (dirm == 1)
+				{
+					dire = 1;
+					if (x[renemyp][cenemyp + 2] == ' ' && x[renemyp + 1][cenemyp + 1] != '*' && x[renemyp + 2][cenemyp + 1] != ' ')
+					{
+						cenemyp++;
+						walke *= -1;
+					}
+					else
+					{
+						dirm = -1;
+						dire = -1;
+					}
+				}
+				if (dirm == -1)
+				{
+					dire = -1;
+					if (x[renemyp][cenemyp - 2] == ' ' && x[renemyp + 1][cenemyp - 1] != '*' && x[renemyp + 2][cenemyp - 1] != ' ')
+					{
+						cenemyp--;
+						walke *= -1;
+					}
+					else
+					{
+						dirm = 1;
+						dire = 1;
+					}
+				}
+				rbullet = renemyp;
+				cbullet = cenemyp;
+			}
+		}
+	}
+	void EnemyBulletDirection(char x[][400], int rhero, int chero)
+	{
+		if (stat == 1)
+		{
+			if ((rhero == renemyp && (chero > cenemyp && chero < cenemyp + 10)) || (rhero == renemyp && (chero < cenemyp && chero > cenemyp - 10)) || (chero == cenemyp && (rhero < renemyp && rhero > renemyp - 10)) || (rhero < renemyp && (chero > cenemyp && chero < cenemyp + 10)) || (rhero < renemyp && (chero < cenemyp && chero >cenemyp - 10)) || ((rhero > renemyp && (chero < cenemyp && chero > cenemyp - 10))) || ((rhero > renemyp && (chero > cenemyp && chero < cenemyp + 10))))
+			{
+				if ((rhero == renemyp && (chero > cenemyp && chero < cenemyp + 10)) && rbullet == renemyp && cbullet == cenemyp)
+				{
+					cbullet += 2;
+					dire = 1;
+					mv = 0;
+				}
+				if ((rhero == renemyp && (chero < cenemyp && chero > cenemyp - 10)) && rbullet == renemyp && cbullet == cenemyp)
+				{
+					cbullet -= 2;
+					dire = -1;
+					mv = 0;
+				}
+				if ((chero == cenemyp && (rhero < renemyp && rhero > renemyp - 10)) && rbullet == renemyp && cbullet == cenemyp)
+				{
+					rbullet -= 2;
+					dire = 2;
+					mv = 0;
+				}
+				if ((rhero < renemyp && (chero > cenemyp && chero < cenemyp + 10)) && rbullet == renemyp && cbullet == cenemyp)
+				{
+					rbullet -= 2;
+					cbullet += 2;
+					dire = 3;
+					mv = 0;
+				}
+				if ((rhero < renemyp && (chero < cenemyp && chero > cenemyp - 10)) && rbullet == renemyp && cbullet == cenemyp)
+				{
+					rbullet -= 2;
+					cbullet -= 2;
+					dire = -3;
+					mv = 0;
+				}
+				if ((rhero > renemyp && (chero > cenemyp && chero < cenemyp + 10)) && rbullet == renemyp && cbullet == cenemyp)
+				{
+					rbullet += 2;
+					cbullet += 2;
+					dire = 4;
+					mv = 0;
+				}
+				if ((rhero > renemyp && (chero < cenemyp && chero > cenemyp - 10)) && rbullet == renemyp && cbullet == cenemyp)
+				{
+					rbullet += 2;
+					cbullet -= 2;
+					dire = -4;
+					mv = 0;
+				}
+			}
+			else
+			{
+				if (rbullet == renemyp && cbullet == cenemyp)
+				{
+					mv = 1;
+					EnemyAction(x);
+				}
+			}
+		}
+	}
+	void DrawEnemyBullet(char x[][400])
+	{
+		if (stat == 1)
+		{
+			if (ewe == 1)
+			{
+				x[rbullet][cbullet] = '.';
+			}
+			if (ewe == 2)
+			{
+				if (dire == 1 && x[rbullet][cbullet + 1] == ' ')
+				{
+					cbullet += 3;
+					x[rbullet][cbullet] = '.';
+					x[rbullet][cbullet - 1] = '.';
+					x[rbullet][cbullet - 2] = '.';
+				}
+				if (dire == -1 && x[rbullet][cbullet - 1] == ' ')
+				{
+					cbullet -= 3;
+					x[rbullet][cbullet] = '.';
+					x[rbullet][cbullet + 1] = '.';
+					x[rbullet][cbullet + 2] = '.';
+				}
+				if (dire == 2)
+				{
+					rbullet -= 3;
+					x[rbullet][cbullet] = '.';
+					x[rbullet + 1][cbullet] = '.';
+					x[rbullet + 2][cbullet] = '.';
+				}
+				if (dire == 3 && x[rbullet - 1][cbullet + 1] == ' ')
+				{
+					rbullet -= 3;
+					cbullet += 3;
+					x[rbullet][cbullet] = '.';
+					x[rbullet + 1][cbullet - 1] = '.';
+					x[rbullet + 2][cbullet - 2] = '.';
+				}
+				if (dire == -3)
+				{
+					rbullet -= 3;
+					cbullet -= 3;
+					if (x[rbullet][cbullet] == ' ' && x[renemyp - 4][cenemyp - 4] == ' ')
+					{
+						x[rbullet][cbullet] = '+';
+						x[rbullet + 1][cbullet + 1] = '.';
+						x[rbullet + 2][cbullet + 2] = '.';
+					}
+				}
+				if (dire == 4 && x[renemyp + 2][cenemyp + 1] == ' ')
+				{
+					rbullet += 3;
+					cbullet += 3;
+					x[rbullet][cbullet] = '.';
+					x[rbullet - 1][cbullet - 1] = '.';
+					x[rbullet - 2][cbullet - 2] = '.';
+				}
+				if (dire == -4 && x[renemyp + 2][cenemyp - 1] == ' ')
+				{
+					rbullet += 3;
+					cbullet -= 3;
+					x[rbullet][cbullet] = '.';
+					x[rbullet - 1][cbullet + 1] = '.';
+					x[rbullet - 2][cbullet + 2] = '.';
+				}
+			}
+			if (ewe == 3)
+			{
+				if (dire == 1 && x[rbullet][cbullet + 1] == ' ')
+				{
+					cbullet += 1;
+					x[rbullet][cbullet] = '.';
+					x[rbullet + 1][cbullet - 1] = '.';
+					x[rbullet - 1][cbullet - 1] = '.';
+				}
+				if (dire == -1 && x[rbullet][cbullet - 1] == ' ')
+				{
+					cbullet -= 1;
+					x[rbullet][cbullet] = '.';
+					x[rbullet + 1][cbullet + 1] = '.';
+					x[rbullet - 1][cbullet + 1] = '.';
+				}
+				if (dire == 2)
+				{
+					rbullet -= 1;
+					x[rbullet][cbullet] = '.';
+					x[rbullet + 1][cbullet + 1] = '.';
+					x[rbullet + 1][cbullet - 1] = '.';
+				}
+				if (dire == 3 && x[rbullet - 1][cbullet + 1] == ' ')
+				{
+					rbullet -= 1;
+					cbullet += 1;
+					x[rbullet][cbullet] = '.';
+					x[rbullet + 1][cbullet] = '.';
+					x[rbullet][cbullet - 2] = '.';
+				}
+				if (dire == -3 && x[rbullet - 1][cbullet - 1] == ' ')
+				{
+					rbullet -= 1;
+					cbullet -= 1;
+					x[rbullet][cbullet] = '.';
+					x[rbullet + 1][cbullet] = '.';
+					x[rbullet][cbullet + 2] = '.';
+				}
+				if (dire == 4 && x[renemyp + 2][cenemyp + 1] == ' ')
+				{
+					rbullet += 1;
+					cbullet += 1;
+					x[rbullet][cbullet] = '.';
+					x[rbullet - 1][cbullet] = '.';
+					x[rbullet][cbullet - 2] = '.';
+				}
+				if (dire == -4 && x[renemyp + 2][cenemyp - 1] == ' ')
+				{
+					rbullet += 1;
+					cbullet -= 1;
+					x[rbullet][cbullet] = '.';
+					x[rbullet - 1][cbullet] = '.';
+					x[rbullet][cbullet + 2] = '.';
+				}
+			}
+		}
+	}
+	void MoveEnemyBullet(char x[][400], int rhero, int chero, int dir, int& hphero, int& aphero, int l)
+	{
+		if (stat == 1)
+		{
+			if (ewe == 1 || ewe == 2)
+			{
+				if (dire == 1)
+				{
+					if (x[rbullet][cbullet + 1] == ' ')
+					{
+						cbullet++;
+					}
+					else
+					{
+						rbullet = renemyp;
+						cbullet = cenemyp;
+					}
+				}
+				if (dire == -1)
+				{
+					if (x[rbullet][cbullet - 1] == ' ')
+					{
+						cbullet--;
+					}
+					else
+					{
+						rbullet = renemyp;
+						cbullet = cenemyp;
+					}
+				}
+				if (dire == 2)
+				{
+					if (x[rbullet - 1][cbullet] == ' ')
+					{
+						rbullet--;
+					}
+					else
+					{
+						rbullet = renemyp;
+						cbullet = cenemyp;
+					}
+				}
+				if (dire == -3)
+				{
+					if (x[rbullet - 1][cbullet - 1] == ' ')
+					{
+						cbullet--;
+						rbullet--;
+					}
+					else
+					{
+						rbullet = renemyp;
+						cbullet = cenemyp;
+					}
+				}
+				if (dire == 3)
+				{
+					if (x[rbullet - 1][cbullet + 1] == ' ')
+					{
+						cbullet++;
+						rbullet--;
+					}
+					else
+					{
+						rbullet = renemyp;
+						cbullet = cenemyp;
+					}
+				}
+				if (dire == 4)
+				{
+					if (x[rbullet + 1][cbullet + 1] == ' ')
+					{
+						cbullet++;
+						rbullet++;
+					}
+					else
+					{
+						rbullet = renemyp;
+						cbullet = cenemyp;
+					}
+				}
+				if (dire == -4)
+				{
+					if (x[rbullet + 1][cbullet - 1] == ' ')
+					{
+						cbullet--;
+						rbullet++;
+					}
+					else
+					{
+						rbullet = renemyp;
+						cbullet = cenemyp;
+					}
+				}
+			}
+			if (ewe == 3)
+			{
+				if (dire == 1)
+				{
+					if (x[rbullet][cbullet + 1] == ' ' && x[rbullet + 1][cbullet] == ' ' && x[rbullet - 1][cbullet] == ' ')
+					{
+						cbullet++;
+					}
+					else
+					{
+						rbullet = renemyp;
+						cbullet = cenemyp;
+					}
+				}
+				if (dire == -1)
+				{
+					if (x[rbullet][cbullet - 1] == ' ' && x[rbullet - 1][cbullet] == ' ' && x[rbullet + 1][cbullet] == ' ')
+					{
+						cbullet--;
+					}
+					else
+					{
+						rbullet = renemyp;
+						cbullet = cenemyp;
+					}
+				}
+				if (dire == 2)
+				{
+					if (x[rbullet - 1][cbullet] == ' ' && x[rbullet][cbullet - 1] == ' ' && x[rbullet][cbullet + 1] == ' ')
+					{
+						rbullet--;
+					}
+					else
+					{
+						rbullet = renemyp;
+						cbullet = cenemyp;
+					}
+				}
+				if (dire == -3)
+				{
+					if (x[rbullet - 1][cbullet - 1] == ' ' && x[rbullet - 1][cbullet + 1] == ' ')
+					{
+						cbullet--;
+						rbullet--;
+					}
+					else
+					{
+						rbullet = renemyp;
+						cbullet = cenemyp;
+					}
+				}
+				if (dire == 3)
+				{
+					if (x[rbullet - 1][cbullet + 1] == ' ' && x[rbullet - 1][cbullet - 1] == ' ')
+					{
+						cbullet++;
+						rbullet--;
+					}
+					else
+					{
+						rbullet = renemyp;
+						cbullet = cenemyp;
+					}
+				}
+				if (dire == 4)
+				{
+					if (x[rbullet + 1][cbullet + 1] == ' ' && x[rbullet + 1][cbullet - 1] == ' ')
+					{
+						cbullet++;
+						rbullet++;
+					}
+					else
+					{
+						rbullet = renemyp;
+						cbullet = cenemyp;
+					}
+				}
+				if (dire == -4)
+				{
+					if (x[rbullet + 1][cbullet - 1] == ' ' && x[rbullet + 1][cbullet + 1] == ' ')
+					{
+						cbullet--;
+						rbullet++;
+					}
+					else
+					{
+						rbullet = renemyp;
+						cbullet = cenemyp;
+					}
+				}
+			}
+			if (((rbullet == rhero && cbullet == chero) || (rbullet == rhero && cbullet == chero + dir) || (rbullet == rhero + 1 && cbullet == chero)) && l == -1)
+			{
+				if (ewe == 1)
+				{
+					if (aphero > 0)
+					{
+						hphero -= 25;
+						aphero -= 25;
+					}
+					else
+					{
+						hphero -= 25;
+					}
+				}
+				if (ewe == 2)
+				{
+					if (aphero > 0)
+					{
+						hphero -= 25;
+						aphero -= 25;
+					}
+					else
+					{
+						hphero -= 25;
+					}
+				}
+				if (ewe == 3)
+				{
+					if (aphero > 0)
+					{
+						hphero -= 25;
+						aphero -= 25;
+					}
+					else
+					{
+						hphero -= 25;
+					}
+				}
+				if (aphero < 0)
+				{
+					aphero = 0;
+				}
+			}
+		}
+	}
+};
+struct Hero
+{
+	int rhero, chero, s, dir, knife, walk, ew, z, cooldownI, cooldownO, cooldownP, cooldownU, grnd, rgrnd, cgrnd, dgrnd, ctg;
+	int pch[2], rb[80], cb[80], dirb[80], wb[80], ct, hphero, aphero, pisb, mgb, sgb, rpgb, ngrnd, parry, mana, perk1, perk2, perk3, perk4;
+	int tf, n, ctw, ctdj, ctj, l;
+	Hero()
+	{
+		rhero = 102, chero = 17, s = 0, dir = 1, knife = 0, walk = 1, ew = 1, z, cooldownI = 0, cooldownO = 0, cooldownP = 0, cooldownU = 0, grnd = 0, rgrnd, cgrnd, dgrnd, ctg = 0;
+		pch[0] = 0, pch[1] = 1, rb[80], cb[80], dirb[80], wb[80], ct = 0, hphero = 100, aphero = 0, pisb = 99, mgb = 99, sgb = 96, rpgb = 93, ngrnd = 93, parry = 50, perk1 = 0, perk2 = 0, perk3 = 0, perk4 = 0;
+		tf = 0, n = 100, ctw = 0, ctdj = 0, ctj = 0, mana = 100, l = -1;
+		//place values to indicate each ID is non-occupied
+		for (int j = 0; j < 80; j++)
+		{
+			rb[j] = -1;
+			cb[j] = -1;
+			dirb[j] = 0;
+		}
+	}
+	void DrawHero(char x[][400])
+	{
+		//head
+		x[rhero][chero] = 2;
+		//if leg is centered, alternate between walking animations
+		if (pch[0] == 0)
+		{
+			if (walk == 1)
+			{
+				x[rhero + 1][chero + pch[0]] = 239;
+			}
+			else
+			{
+				x[rhero + 1][chero + pch[0]] = 124;
+			}
+		}
+		//if leg is to the left or right, change leg accordingly
+		if (pch[0] == -1)
+		{
+			x[rhero][chero + pch[0]] = '>';
+		}
+		if (pch[0] == 1)
+		{
+			x[rhero][chero + pch[0]] = '<';
+		}
+		//based on hero's direction and equipped weapon change weapon style
+		if (pch[1] == 1)
+		{
+			if (ew == 1)
+			{
+				x[rhero][chero + pch[1]] = 169;
+			}
+			if (ew == 2)
+			{
+				x[rhero][chero + pch[1]] = 210;
+			}
+			if (ew == 3)
+			{
+				x[rhero][chero + pch[1]] = 214;
+			}
+			if (ew == 4)
+			{
+				x[rhero][chero + pch[1]] = 209;
+			}
+			if (ew == 5)
+			{
+				x[rhero][chero + pch[1]] = 92;
+			}
+			if (ew == 6)
+			{
+				x[rhero][chero + pch[1]] = '_';
+			}
+		}
+		else
+		{
+			if (ew == 1)
+			{
+				x[rhero][chero + pch[1]] = 170;
+			}
+			if (ew == 2)
+			{
+				x[rhero][chero + pch[1]] = 210;
+			}
+			if (ew == 3)
+			{
+				x[rhero][chero + pch[1]] = 183;
+			}
+			if (ew == 4)
+			{
+				x[rhero][chero + pch[1]] = 209;
+			}
+			if (ew == 5)
+			{
+				x[rhero][chero + pch[1]] = 47;
+			}
+			if (ew == 6)
+			{
+				x[rhero][chero + pch[1]] = '_';
+			}
+		}
+		//delete previous images of the hero during the jump
+		if (x[rhero + 2][chero] == 239)
+		{
+			x[rhero + 2][chero] = ' ';
+		}
+		if (x[rhero - 1][chero] == 'O')
+		{
+			x[rhero - 1][chero] = ' ';
+		}
+		if (x[rhero + 1][chero + 1] == 239)
+		{
+			x[rhero + 1][chero + 1] = ' ';
+		}
+		if (x[rhero][chero + 1] == 'O')
+		{
+			x[rhero][chero + 1] = ' ';
+		}
+		if (x[rhero + 1][chero - 1] == 239)
+		{
+			x[rhero + 1][chero - 1] = ' ';
+		}
+		if (x[rhero][chero - 1] == 'O')
+		{
+			x[rhero][chero - 1] = ' ';
+		}
+	}
+	void UI(char x[][400], int boss, int hpboss)
+	{
+		int k = 48;
+		//display health points
+		x[0][0] = 'H';
+		x[0][1] = 'P';
+		x[0][2] = ':';
+		if (hphero < 10)
+		{
+			x[0][3] = k + hphero;
+		}
+		if (hphero > 9)
+		{
+			x[0][3] = k + (hphero / 10);
+			x[0][4] = k + (hphero % 10);
+		}
+		if (hphero > 99)
+		{
+			x[0][3] = k + (hphero / 100);
+			x[0][4] = k + ((hphero % 100) / 10);
+			x[0][5] = k + (hphero % 10);
+		}
+		//display armor points over health points if they exist
+		x[0][8] = 'A';
+		x[0][9] = 'P';
+		x[0][10] = ':';
+		if (aphero < 10)
+		{
+			x[0][11] = k + aphero;
+		}
+		if (aphero > 9)
+		{
+			x[0][11] = k + (aphero / 10);
+			x[0][12] = k + (aphero % 10);
+		}
+		if (aphero > 99)
+		{
+			x[0][11] = k + (aphero / 100);
+			x[0][12] = k + ((aphero % 100) / 10);
+			x[0][13] = k + (aphero % 10);
+		}
+		/*
+		numbers in ASCII start from 48 so if the number of bullets are less than 10 it adds it to k=48 (0 in ASCII) to display
+		the correct number. If larger than 10, display the digits by getting remainder of the bullets of 10 and display the tens before it.
+		*/
+		//display mana points
+		x[0][16] = 'M';
+		x[0][17] = 'P';
+		x[0][18] = ':';
+		if (mana < 10)
+		{
+			x[0][19] = k + mana;
+		}
+		if (mana > 9)
+		{
+			x[0][19] = k + (mana / 10);
+			x[0][20] = k + (mana % 10);
+		}
+		if (mana > 99)
+		{
+			x[0][19] = k + (mana / 100);
+			x[0][20] = k + ((mana % 100) / 10);
+			x[0][21] = k + (mana % 10);
+		}
+		if (ew == 1)
+		{
+			x[0][24] = 'P';
+			x[0][25] = 'i';
+			x[0][26] = 's';
+			x[0][27] = 't';
+			x[0][28] = 'o';
+			x[0][29] = 'l';
+			x[0][30] = ':';
+			if (pisb < 10)
+			{
+				x[0][31] = k + pisb;
+			}
+			else
+			{
+				x[0][31] = k + (pisb / 10);
+				x[0][32] = k + (pisb % 10);
+			}
+		}
+		if (ew == 2)
+		{
+			x[0][24] = 'M';
+			x[0][25] = 'a';
+			x[0][26] = 'c';
+			x[0][27] = 'h';
+			x[0][28] = 'i';
+			x[0][29] = 'n';
+			x[0][30] = 'e';
+			x[0][31] = ' ';
+			x[0][32] = 'G';
+			x[0][33] = 'u';
+			x[0][34] = 'n';
+			x[0][35] = ':';
+			if (mgb < 10)
+			{
+				x[0][36] = k + mgb;
+			}
+			else
+			{
+				x[0][36] = k + (mgb / 10);
+				x[0][37] = k + (mgb % 10);
+			}
+		}
+		if (ew == 3)
+		{
+			x[0][24] = 'S';
+			x[0][25] = 'h';
+			x[0][26] = 'o';
+			x[0][27] = 't';
+			x[0][28] = 'g';
+			x[0][29] = 'u';
+			x[0][30] = 'n';
+			x[0][31] = ':';
+			if (sgb < 10)
+			{
+				x[0][32] = k + sgb;
+			}
+			else
+			{
+				x[0][32] = k + (sgb / 10);
+				x[0][33] = k + (sgb % 10);
+			}
+		}
+		if (ew == 4)
+		{
+			x[0][24] = 'R';
+			x[0][25] = 'P';
+			x[0][26] = 'G';
+			x[0][27] = ':';
+			if (rpgb < 10)
+			{
+				x[0][28] = k + rpgb;
+			}
+			else
+			{
+				x[0][28] = k + (rpgb / 10);
+				x[0][29] = k + (rpgb % 10);
+			}
+		}
+		//Boss Health Bar
+		if (boss == 4)
+		{
+			x[0][40] = 'A';
+			x[0][41] = 'S';
+			x[0][42] = 'S';
+			x[0][43] = 'A';
+			x[0][44] = 'S';
+			x[0][45] = 'S';
+			x[0][46] = 'I';
+			x[0][47] = 'N';
+			x[0][48] = ':';
+			if (hpboss < 10)
+			{
+				x[0][49] = k + hpboss;
+			}
+			if (hpboss > 9)
+			{
+				x[0][49] = k + (hpboss / 10);
+				x[0][50] = k + (hpboss % 10);
+			}
+			if (hpboss > 99)
+			{
+				x[0][49] = k + (hpboss / 100);
+				x[0][50] = k + ((hpboss % 100) / 10);
+				x[0][51] = k + (hpboss % 10);
+			}
+		}
+		if (boss == 1)
+		{
+			x[0][40] = 'S';
+			x[0][41] = 'H';
+			x[0][42] = 'O';
+			x[0][43] = 'T';
+			x[0][44] = 'G';
+			x[0][45] = 'U';
+			x[0][46] = 'N';
+			x[0][47] = 'E';
+			x[0][48] = 'E';
+			x[0][49] = 'R';
+			x[0][50] = ':';
+			if (hpboss < 10)
+			{
+				x[0][51] = k + hpboss;
+			}
+			if (hpboss > 9)
+			{
+				x[0][51] = k + (hpboss / 10);
+				x[0][52] = k + (hpboss % 10);
+			}
+			if (hpboss > 99)
+			{
+				x[0][51] = k + (hpboss / 100);
+				x[0][52] = k + ((hpboss % 100) / 10);
+				x[0][53] = k + (hpboss % 10);
+			}
+		}
+		//display input i cooldown
+		x[0][61] = 'I';
+		x[0][62] = ':';
+		if (cooldownI < 10)
+		{
+			x[0][63] = k + cooldownI;
+		}
+		if (cooldownI > 9)
+		{
+			x[0][63] = k + (cooldownI / 10);
+			x[0][64] = k + (cooldownI % 10);
+		}
+		if (cooldownI > 99)
+		{
+			x[0][63] = k + (cooldownI / 100);
+			x[0][64] = k + ((cooldownI % 100) / 10);
+			x[0][65] = k + (cooldownI % 10);
+		}
+		//display input o cooldown
+		x[0][67] = 'O';
+		x[0][68] = ':';
+		if (cooldownO < 10)
+		{
+			x[0][69] = k + cooldownO;
+		}
+		if (cooldownO > 9)
+		{
+			x[0][69] = k + (cooldownO / 10);
+			x[0][70] = k + (cooldownO % 10);
+		}
+		if (cooldownO > 99)
+		{
+			x[0][69] = k + (cooldownO / 100);
+			x[0][70] = k + ((cooldownO % 100) / 10);
+			x[0][71] = k + (cooldownO % 10);
+		}
+		//display input p cooldown
+		x[0][73] = 'P';
+		x[0][74] = ':';
+		if (cooldownP < 10)
+		{
+			x[0][75] = k + cooldownP;
+		}
+		if (cooldownP > 9)
+		{
+			x[0][75] = k + (cooldownP / 10);
+			x[0][76] = k + (cooldownP % 10);
+		}
+		if (cooldownP > 99)
+		{
+			x[0][75] = k + (cooldownP / 100);
+			x[0][76] = k + ((cooldownP % 100) / 10);
+			x[0][77] = k + (cooldownP % 10);
+		}
+	}
+	void Shoot(char x[][400], int& nb)
+	{
+		int i, k;
+		//scan every ID and based on the equipped weapon, spawn bullets accordingly
+		/*
+		rb is the row of the bullet
+		cb is the col of the bullet
+		wb is the weapon equipped when the bullet was fired
+		dirb is the direction the bullet was fired in
+		*/
+		for (i = 0; i < 80; i++)
+		{
+			if (rb[i] == -1)
+			{
+				//Handgun: place one bullet at the barrel and move it 3 cells at a time
+				if (ew == 1 || ew == 5)
+				{
+					rb[i] = rhero;
+					cb[i] = chero + dir * 2;
+					x[rb[i]][cb[i]] = 249;
+					wb[i] = 1;
+					dirb[i] = dir;
+					nb -= 1;
+					break;
+				}
+				//Machine Gun: place three bullet at the barrel and move them 4 cells at a time
+				if (ew == 2)
+				{
+					rb[i] = rhero;
+					cb[i] = chero + dir * 2;
+					x[rb[i]][cb[i]] = 249;
+					wb[i] = 2;
+					dirb[i] = dir;
+					k = 3;
+					for (i++; i < 80; i++)
+					{
+						if (k < 5)
+						{
+							if (rb[i] == -1)
+							{
+								rb[i] = rhero;
+								cb[i] = chero + dir * k;
+								x[rb[i]][cb[i]] = 249;
+								wb[i] = 2;
+								dirb[i] = dir;
+								k++;
+							}
+						}
+						else
+						{
+							break;
+						}
+					}
+					nb -= 3;
+					break;
+				}
+				//Shotgun: Place 3 bullets above each other and move the extreme ones faster (3 cells) than the middle (2 cells) for spread look
+				if (ew == 3)
+				{
+					rb[i] = rhero;
+					cb[i] = chero + dir * 2;
+					x[rb[i]][cb[i]] = 249;
+					wb[i] = 3;
+					dirb[i] = dir;
+					k = 1;
+					for (i++; i < 80; i++)
+					{
+						if (k > -2)
+						{
+							if (rb[i] == -1)
+							{
+								rb[i] = rhero + k;
+								cb[i] = chero + dir * 3;
+								x[rb[i]][cb[i]] = 249;
+								wb[i] = 3;
+								dirb[i] = dir;
+								k -= 2;
+							}
+						}
+						else
+						{
+							break;
+						}
+					}
+					nb -= 3;
+					break;
+				}
+				//RPG: place the appropriate ASCII symbol based on the direction and move it 3 cells at a time
+				if (ew == 4)
+				{
+					if (dir == 1)
+					{
+						rb[i] = rhero;
+						cb[i] = chero + dir * 2;
+						x[rb[i]][cb[i]] = 175;
+						wb[i] = 4;
+						dirb[i] = dir;
+					}
+					else
+					{
+						rb[i] = rhero;
+						cb[i] = chero + dir * 2;
+						x[rb[i]][cb[i]] = 174;
+						wb[i] = 4;
+						dirb[i] = dir;
+					}
+					nb -= 1;
+					break;
+				}
+			}
+		}
+	}
+	void MoveBullets(char x[][400], int Door[], int DoorRow[], int DoorCol[], int rboss, int cboss, int dirboss, int boss, int& hpboss, int sboss, Enemy enem[], int& NumEnemy,int rfboss,int cfboss,int& hpfboss,int dirfb,int& statefb)
+	{
+		int i;
+		//Move the rows and cols of bullets
+		for (i = 0; i < 80; i++)
+		{
+			if (rb[i] > -1 && cb[i] > 0 && cb[i] < 399)
+			{
+				//loop in the 3 cells which the bullet will skip and check for objects
+				for (int c = 0; c < 3; c++)
+				{
+					if (x[rb[i]][cb[i] + dirb[i]] != ' ' && x[rb[i]][cb[i] + dirb[i]] != '.')
+					{
+						break;
+					}
+					cb[i] += dirb[i];
+				}
+			}
+			else
+			{
+				rb[i] = -1;
+				cb[i] = -1;
+				dirb[i] = 0;
+			}
+		}
+		//Overwrite cells with bullets
+		for (i = 0; i < 80; i++)
+		{
+			if (rb[i] > -1)
+			{
+				//if the weapon is not an RPG, display the normal bullet. else, display the rocket.
+				if (wb[i] == 1 || wb[i] == 2 || wb[i] == 3)
+				{
+					x[rb[i]][cb[i]] = 249;
+					if (x[rb[i]][cb[i] + dirb[i]] != ' ' && x[rb[i]][cb[i] + dirb[i]] != '.')
+					{
+						for (int j = 0; j < 5; j++)
+						{
+							if ((rb[i] == enem[j].renemyp && cb[i] + dirb[i] == enem[j].cenemyp) || (rb[i] == enem[j].renemyp && cb[i] + dirb[i] == enem[j].cenemyp + enem[j].dire) || (rb[i] == enem[j].renemyp + 1 && cb[i] + dirb[i] == enem[j].cenemyp) || (rb[i] == enem[j].renemyp + 1 && cb[i] + dirb[i] == enem[j].cenemyp + 1) || (rb[i] == enem[j].renemyp + 1 && cb[i] + dirb[i] == enem[j].cenemyp - 1))
+							{
+								enem[j].hp -= 25 + perk3;
+								if (enem[j].hp <= 0 && enem[j].stat == 1)
+								{
+									enem[j].stat = 0;
+									NumEnemy--;
+								}
+							}
+						}
+						if ((rb[i] == rfboss  && cb[i] + dirb[i] == cfboss)|| (rb[i] == rfboss+1 && cb[i] + dirb[i] == cfboss)|| (rb[i] == rfboss+2 && cb[i] + dirb[i] == cfboss) || (rb[i] == rfboss + 1 && cb[i] + dirb[i] == cfboss + dirfb*3) || (rb[i] == rfboss + 1 && cb[i] + dirb[i] == cfboss) || (rb[i] == rfboss + 1 && cb[i] + dirb[i] == cfboss + 1) || (rb[i] == rfboss && cb[i] + dirb[i] == cfboss))
+						{
+							hpboss -= 25;
+							if (hpboss <= 0 && statefb == 1)
+							{
+								statefb = 0;
+							}
+						}
+						//Check if any of the doors match the ones saved in the array then change their flag to 0 to stop printing them
+						if (x[rb[i]][cb[i] + dirb[i]] == '|')
+						{
+							for (int r = 0; r < 20; r++)
+							{
+								if (rb[i] == DoorRow[r] && cb[i] + dirb[i] == DoorCol[r])
+								{
+									Door[r] = 0;
+								}
+								if (rb[i] - 1 == DoorRow[r] && cb[i] + dirb[i] == DoorCol[r])
+								{
+									Door[r] = 0;
+								}
+								if (rb[i] + 1 == DoorRow[r] && cb[i] + dirb[i] == DoorCol[r])
+								{
+									Door[r] = 0;
+								}
+							}
+						}
+						if (x[rb[i]][cb[i] + dirb[i]] == '#')
+						{
+							x[rb[i]][cb[i]] = ' ';
+							x[rb[i]][cb[i] - 3] = 248;
+						}
+						if (x[rb[i]][cb[i] + dirb[i]] == '*')
+						{
+						}
+						if (x[rb[i]][cb[i] + dirb[i]] == 'e')
+						{
+						}
+						//Boss Damage
+						if (boss == 4)
+						{
+							if (rb[i] == rboss && cb[i] + dirb[i] == cboss)
+							{
+								hpboss -= 25 + perk3;
+							}
+							if (sboss == 2)
+							{
+								if ((rb[i] == rboss + 1 && cb[i] + dirb[i] == cboss) || (rb[i] == rboss + 2 && cb[i] + dirb[i] == cboss) || (rb[i] == rboss + 1 && cb[i] + dirb[i] == cboss + dirboss))
+								{
+									hpboss -= 25 + perk3;
+								}
+							}
+							if (sboss == 1)
+							{
+								if ((rb[i] == rboss + 1 && cb[i] + dirb[i] == cboss) || (rb[i] == rboss + 1 && cb[i] + dirb[i] == cboss + dirboss))
+								{
+									hpboss -= 25 + perk3;
+								}
+							}
+							if (sboss == 0)
+							{
+								if ((rb[i] == rboss && cb[i] + dirb[i] == cboss + dirboss) || (rb[i] == rboss && cb[i] + dirb[i] == cboss - dirboss * 2))
+								{
+									hpboss -= 25 + perk3;
+								}
+							}
+						}
+						if (boss == 1)
+						{
+							if (dir == dirboss)
+							{
+								if ((rb[i] == rboss && cb[i] + dirb[i] == cboss) || (rb[i] == rboss + 1 && cb[i] + dirb[i] == cboss) || (rb[i] == rboss + 2 && cb[i] + dirb[i] == cboss) || (rb[i] == rboss + 1 && cb[i] + dirb[i] == cboss + dirboss) || (rb[i] == rboss + 1 && cb[i] + dirb[i] == cboss + dirboss * 2))
+								{
+									hpboss -= 25 + perk3;
+								}
+							}
+						}
+						rb[i] = -1;
+					}
+				}
+				if (wb[i] == 4)
+				{
+					if (dirb[i] > 0)
+					{
+						x[rb[i]][cb[i]] = 175;
+					}
+					else
+					{
+						x[rb[i]][cb[i]] = 174;
+					}
+					if (x[rb[i]][cb[i] + dirb[i]] != ' ' && x[rb[i]][cb[i] + dirb[i]] != '.')
+					{
+						for (int k = rb[i] - 2; k <= rb[i] + 2; k++)
+						{
+							for (int j = cb[i] + dirb[i] - 2; j <= cb[i] + dirb[i] + 2; j++)
+							{
+								for (int e = 0; e < 5; e++)
+								{
+									if ((k == enem[e].renemyp && j == enem[e].cenemyp) || (k == enem[e].renemyp && j == enem[e].cenemyp + enem[e].dire) || (k == enem[e].renemyp + 1 && j == enem[e].cenemyp) || (k == enem[e].renemyp + 1 && j == enem[e].cenemyp + 1) || (k == enem[e].renemyp + 1 && j == enem[e].cenemyp - 1))
+									{
+										enem[e].hp -= 100 + perk3;
+										if (enem[e].hp <= 0 && enem[e].stat == 1)
+										{
+											enem[e].stat = 0;
+											NumEnemy--;
+										}
+									}
+								}
+								//Check if any of the doors match the ones saved in the array then change their flag to 0 to stop printing them
+								if (x[k][j] == '|')
+								{
+									for (int r = 0; r < 20; r++)
+									{
+										if (k == DoorRow[r] && j == DoorCol[r])
+										{
+											Door[r] = 0;
+										}
+										if (k - 1 == DoorRow[r] && j == DoorCol[r])
+										{
+											Door[r] = 0;
+										}
+										if (k + 1 == DoorRow[r] && j == DoorCol[r])
+										{
+											Door[r] = 0;
+										}
+									}
+								}
+								if (x[k][j] == '#')
+								{
+								}
+								if (x[k][j] == '*')
+								{
+								}
+								if (x[k][j] == 'e')
+								{
+								}
+								//Boss Damage
+								if (boss == 4)
+								{
+									if (k == rboss && j == cboss)
+									{
+										hpboss -= 25 + perk3;
+									}
+									if (sboss == 2)
+									{
+										if ((k == rboss + 1 && j == cboss) || (k == rboss + 2 && j == cboss) || (k == rboss + 1 && j == cboss + dirboss))
+										{
+											hpboss -= 25 + perk3;
+										}
+									}
+									if (sboss == 1)
+									{
+										if ((k == rboss + 1 && j == cboss) || (k == rboss + 1 && j == cboss + dirboss))
+										{
+											hpboss -= 25 + perk3;
+										}
+									}
+									if (sboss == 0)
+									{
+										if ((k == rboss && j == cboss + dirboss) || (k == rboss && j == cboss - dirboss * 2))
+										{
+											hpboss -= 25 + perk3;
+										}
+									}
+								}
+								if (boss == 1)
+								{
+									if (dir == dirboss)
+									{
+										if (k == rboss && j == cboss)
+										{
+											hpboss -= 25 + perk3;
+										}
+										if (k == rboss + 1 && j == cboss)
+										{
+											hpboss -= 25 + perk3;
+										}
+										if (k == rboss + 2 && j == cboss)
+										{
+											hpboss -= 25 + perk3;
+										}
+										if (k == rboss + 1 && j == cboss + dirboss)
+										{
+											hpboss -= 25 + perk3;
+										}
+										if (k == rboss + 1 && j == cboss + dirboss * 2)
+										{
+											hpboss -= 25 + perk3;
+										}
+									}
+								}
+							}
+						}
+						for (int k = rb[i] - 2; k <= rb[i] + 2; k++)
+						{
+							for (int j = cb[i] + dirb[i] - 2; j <= cb[i] + dirb[i] + 2; j++)
+							{
+								x[k][j] = 145;
+							}
+						}
+						rb[i] = -1;
+					}
+				}
+			}
+		}
+	}
+	void Knife(char x[][400], Enemy enem[], int& NumEnemy)
+	{
+		//After changing the model to hold the knife in DrawHero, replace it with the other symbol to make the animation
+		if (ew == 5)
+		{
+			if (dir == 1)
+			{
+				x[rhero][chero + 1] = 47;
+			}
+			else
+			{
+				x[rhero][chero - 1] = 92;
+			}
+			//Kinfe Damage
+			for (int e = 0; e < 5; e++)
+			{
+				if ((rhero == enem[e].renemyp && chero + dir * 2 == enem[e].cenemyp) || (rhero == enem[e].renemyp && chero + dir * 2 == enem[e].cenemyp + enem[e].dire) || (rhero == enem[e].renemyp + 1 && chero + dir * 2 == enem[e].cenemyp) || (rhero == enem[e].renemyp + 1 && chero + dir * 2 == enem[e].cenemyp + 1) || (rhero == enem[e].renemyp + 1 && chero + dir * 2 == enem[e].cenemyp - 1))
+				{
+					enem[e].hp -= 50;
+					if (enem[e].hp <= 0 && enem[e].stat == 1)
+					{
+						enem[e].stat = 0;
+						NumEnemy--;
+					}
+				}
+			}
+		}
+	}
+	void Action(char x[][400], char inpt, int& laser, int& map, int& nextmap, int& Checkpoint, int& ce, int Level[],int grab)
+	{
+		if (grab != 1)
+		{
+			if (inpt == 'w')
+			{
+				if (x[rhero - 1][chero] != 'H')
+				{
+					//if standing (s=0), perform jump. else, stand up.
+					if (s == 0)
+					{
+						if (x[rhero - 1][chero] == ' ')
+						{
+							tf = 1;
+							ctw++;
+							if (ctw >= 3)
+							{
+								ctw = 1;
+							}
+						}
+					}
+					else
+					{
+						if (x[rhero - 1][chero] == ' ' && x[rhero - 1][chero + dir] == ' ')
+						{
+							rhero--;
+							pch[0] = 0;
+							s = 0;
+						}
+					}
+				}
+				else
+				{
+					rhero--;
+				}
+			}
+			//if facing left (dir=-1), move to the left. else, turn around.
+			if (inpt == 'a')
+			{
+				if (dir == -1 && (x[rhero][chero - 2] == ' ' || x[rhero][chero - 2] == '+' || x[rhero][chero - 2] == '%' || x[rhero][chero - 2] == '&' || x[rhero][chero - 2] == '[' || x[rhero][chero - 2] == ']' || x[rhero][chero - 2] == 'H'))
+				{
+					if (s == 0 && (x[rhero + 1][chero - 2] == ' ' || x[rhero + 1][chero - 2] == '+' || x[rhero + 1][chero - 2] == '%' || x[rhero + 1][chero - 2] == '&' || x[rhero + 1][chero - 2] == '[' || x[rhero + 1][chero - 2] == ']' || x[rhero + 1][chero - 2] == 'H'))
+					{
+						chero--;
+						walk *= -1;
+					}
+					if (s == -1)
+					{
+						chero--;
+						walk *= -1;
+					}
+				}
+				if (dir == 1 && (x[rhero][chero - 1] == ' ' || x[rhero][chero - 1] == '>' || x[rhero][chero - 1] == 'H'))
+				{
+					if (s == 0)
+					{
+						pch[1] = -1;
+						dir = -1;
+					}
+					else
+					{
+						pch[1] = -1;
+						pch[0] = 1;
+						dir = -1;
+					}
+				}
+				if (x[rhero][chero] == '[' || x[rhero][chero] == ']')
+				{
+					if (aphero > 0)
+					{
+						hphero -= 50 / 2;
+						aphero -= 50 / 2;
+					}
+					else
+					{
+						hphero -= 50;
+					}
+					if (aphero < 0)
+					{
+						aphero = 0;
+					}
+					chero += 3;
+				}
+			}
+			//if standing (s=0), crouch according to the hero's direction. else, check if 2 cells below is empty in order to drop from the platform.
+			if (inpt == 's')
+			{
+				if (x[rhero + 2][chero] != 'H' && x[rhero - 1][chero] != 'H')
+				{
+					if (s == 0)
+					{
+						if (x[rhero + 1][chero + dir] == ' ')
+						{
+							rhero++;
+							if (dir == 1)
+							{
+								pch[0] = -1;
+								s = -1;
+							}
+							else
+							{
+								pch[0] = 1;
+								s = -1;
+							}
+						}
+					}
+					else
+					{
+						if (x[rhero + 2][chero] == ' ' && x[rhero + 2][chero + 1] == ' ' && x[rhero + 2][chero - 1] == ' ')
+						{
+							rhero++;
+						}
+					}
+				}
+				else
+				{
+					if (x[rhero + 2][chero] != '*')
+					{
+						rhero++;
+					}
+				}
+			}
+			//if facing right (dir=1), move to the right. else, turn around.
+			if (inpt == 'd')
+			{
+				if (dir == 1 && (x[rhero][chero + 2] == ' ' || x[rhero][chero + 2] == '+' || x[rhero][chero + 2] == '%' || x[rhero][chero + 2] == '&' || x[rhero][chero + 2] == '[' || x[rhero][chero + 2] == ']' || x[rhero][chero + 2] == 'H'))
+				{
+					if (s == 0 && (x[rhero + 1][chero + 2] == ' ' || x[rhero + 1][chero + 2] == '+' || x[rhero + 1][chero + 2] == '%' || x[rhero + 1][chero + 2] == '&' || x[rhero + 1][chero + 2] == '[' || x[rhero + 1][chero + 2] == ']' || x[rhero + 1][chero + 2] == 'H'))
+					{
+						chero++;
+						walk *= -1;
+					}
+					if (s == -1)
+					{
+						chero++;
+						walk *= -1;
+					}
+				}
+				if (dir == -1 && (x[rhero][chero + 1] == ' ' || x[rhero][chero + 1] == '<' || x[rhero][chero + 1] == 'H'))
+				{
+					if (s == 0)
+					{
+						pch[1] = 1;
+						dir = 1;
+					}
+					else
+					{
+						pch[1] = 1;
+						pch[0] = -1;
+						dir = 1;
+					}
+				}
+				if (x[rhero][chero] == '[' || x[rhero][chero] == ']')
+				{
+					if (aphero > 0)
+					{
+						hphero -= 50 / 2;
+						aphero -= 50 / 2;
+					}
+					else
+					{
+						hphero -= 50;
+					}
+					if (aphero < 0)
+					{
+						aphero = 0;
+					}
+					chero -= 3;
+				}
+			}
+		}
+		if (inpt == 'u')
+		{
+			//call function to shoot and send equipped weapon
+			if (ew == 1 && pisb > 0 && cooldownU == 0)
+			{
+				Shoot(x, pisb);
+				cooldownU = 4;
+				if (perk4 == 1)
+				{
+					cooldownU -= 2;
+				}
+			}
+			if (ew == 2 && mgb > 0 && cooldownU == 0)
+			{
+				Shoot(x, mgb);
+				cooldownU = 0;
+			}
+			if (ew == 3 && sgb > 0 && cooldownU == 0)
+			{
+				Shoot(x, sgb);
+				cooldownU = 10;
+				if (perk4 == 1)
+				{
+					cooldownU -= 5;
+				}
+			}
+			if (ew == 4 && rpgb > 0 && cooldownU == 0)
+			{
+				Shoot(x, rpgb);
+				cooldownU = 25;
+				if (perk4 == 1)
+				{
+					cooldownU -= 10;
+				}
+			}
+		}
+		if (inpt == 'i')
+		{
+			//Grenade
+			if (cooldownI == 0 && mana >= 20)
+			{
+				cooldownI = 10;
+				rgrnd = rhero;
+				cgrnd = chero + dir * 2;
+				z = ew;
+				ew = 6;
+				x[rgrnd][cgrnd] = 232;
+				dgrnd = dir * 2;
+				grnd = 1;
+				ctg = 0;
+				mana -= 20;
+			}
+		}
+		if (inpt == 'o')
+		{
+			//Armor that shields the hero from 3 bullets before it's timer runs out (check the main for the "timer")
+			if (cooldownO == 0 && mana >= 30)
+			{
+				if (aphero < 50 + perk2)
+				{
+					aphero += 50;
+				}
+				else
+				{
+					aphero = 100 + perk2;
+				}
+				cooldownO = 550;
+				mana -= 30;
+			}
+		}
+		if (inpt == 'p')
+		{
+			//Dash 4 cells in the direction the hero is facing (dash when the bullet is between the start and end point of the dash in order to evade)
+			if (cooldownP == 0 && mana >= 15 && s == 0)
+			{
+				for (int i = 0; i < 4; i++)
+				{
+					if (x[rhero][chero + dir * 2] == ' ' && x[rhero + 1][chero + dir] == ' ')
+					{
+						chero += dir;
+					}
+					else
+					{
+						break;
+					}
+				}
+				cooldownP = 50;
+				mana -= 15;
+			}
+		}
+		if (inpt == 'k')
+		{
+			//store the equipped weapon in z and change it to 5 to perform knife animation
+			z = ew;
+			ew = 5;
+			knife = 0;
+			//parry and deflect
+			if (x[rhero][chero + dir * 2] == '.')
+			{
+				Shoot(x, parry);
+			}
+		}
+		if (inpt == 'e')
+		{
+			if (x[rhero][chero + (dir * 2)] == '0' && laser == 1)
+			{
+				laser = 0;
+				return;
+			}
+			if (x[rhero][chero + (dir * 2)] == '0' && laser == 0)
+			{
+				laser = 1;
+				return;
+			}
+			if (map == 9)
+			{
+				if (rhero > 66 && chero > 52 && chero < 108)
+				{
+					nextmap = 1;
+					map = -1;
+					Checkpoint = 1;
+					ce = 0;
+				}
+				if (rhero > 82 && chero > 127 && chero < 241)
+				{
+					nextmap = 2;
+					map = -1;
+					Checkpoint = 3;
+					ce = 0;
+				}
+				if (rhero > 77 && chero > 280 && chero < 360)
+				{
+					nextmap = 3;
+					map = -1;
+					Checkpoint = 5;
+					ce = 0;
+				}
+				if (rhero > 77 && chero >= 381 && chero < 393)
+				{
+					nextmap = 4;
+					map = -1;
+					Checkpoint = 7;
+					ce = 0;
+				}
+				if (rhero > 77 && chero == 397)
+				{
+					nextmap = 5;
+					map = -1;
+					Checkpoint = 9;
+					ce = 0;
+				}
+			}
+			if (map > 0 && map < 9)
+			{
+				if (Level[map - 1] == 1)
+				{
+					nextmap = 9;
+					rhero = 102;
+					if (map == 1)
+					{
+						if (perk1 == 0)
+						{
+							hphero = 150;
+							perk1 = 50;
+							for (int freeze = 0; freeze < 5; freeze++)
+							{
+								x[rhero + 1][chero] = '+';
+								x[rhero + 2][chero] = 'M';
+								x[rhero + 3][chero] = 'a';
+								x[rhero + 4][chero] = 'x';
+								x[rhero + 5][chero] = 'H';
+								x[rhero + 6][chero] = 'P';
+							}
+						}
+						chero = 70;
+					}
+					if (map == 2)
+					{
+
+						if (perk2 == 0)
+						{
+							aphero = 200;
+							perk2 = 100;
+							for (int freeze = 0; freeze < 5; freeze++)
+							{
+								x[rhero + 1][chero] = '+';
+								x[rhero + 2][chero] = 'M';
+								x[rhero + 3][chero] = 'a';
+								x[rhero + 4][chero] = 'x';
+								x[rhero + 5][chero] = 'A';
+								x[rhero + 6][chero] = 'P';
+							}
+						}
+						chero = 180;
+					}
+					if (map == 3)
+					{
+
+						if (perk3 == 0)
+						{
+							perk3 = 25;
+							for (int freeze = 0; freeze < 5; freeze++)
+							{
+								x[rhero + 1][chero] = '+';
+								x[rhero + 2][chero] = 'B';
+								x[rhero + 3][chero] = 'o';
+								x[rhero + 4][chero] = 'n';
+								x[rhero + 5][chero] = 'u';
+								x[rhero + 6][chero] = 's';
+								x[rhero + 7][chero] = 'D';
+								x[rhero + 8][chero] = 'M';
+								x[rhero + 9][chero] = 'G';
+							}
+						}
+						chero = 320;
+					}
+					if (map == 4);
+					{
+						chero = 395;
+					}
+					map = -1;
+				}
+			}
+		}
+		//switching weapons
+		if (inpt == 'z')
+		{
+			ew = 1;
+			z = ew;
+		}
+		if (inpt == 'x')
+		{
+			ew = 2;
+			z = ew;
+		}
+		if (inpt == 'c')
+		{
+			ew = 3;
+			z = ew;
+		}
+		if (inpt == 'v')
+		{
+			ew = 4;
+			z = ew;
+		}
+		if (inpt == 'l')
+		{
+			l *= -1;
+		}
+		if (inpt == 'b')
+		{
+			chero = 180;
+		}
+		if (inpt == 'n')
+		{
+			chero = 320;
+		}
+		if (inpt == 'm')
+		{
+			chero = 385;
+		}
+	}
+	void Grenade(char x[][400], Enemy enem[], int& NumEnemy)
+	{
+		//During first 2 frames, move horizontally only
+		if (ctg < 3)
+		{
+			if (ctg == 1)
+			{
+				ew = z;
+			}
+			if (x[rgrnd][cgrnd + dgrnd] == ' ')
+			{
+				cgrnd += dgrnd;
+				x[rgrnd][cgrnd] = 232;
+			}
+			if (x[rgrnd][cgrnd + dgrnd] != ' ')
+			{
+				x[rgrnd][cgrnd] = ' ';
+				x[rgrnd][cgrnd + (dgrnd / 2)] = 232;
+				cgrnd += dgrnd;
+				grnd = 0;
+			}
+		}
+		//After 2nd frame, move diagonally downwards until the grenade reaches an object
+		if (ctg > 2)
+		{
+			if (x[rgrnd + 1][cgrnd + dgrnd] == ' ')
+			{
+				rgrnd++;
+				cgrnd += dgrnd;
+				x[rgrnd][cgrnd] = 232;
+			}
+			if (x[rgrnd + 1][cgrnd + dgrnd] != ' ')
+			{
+				x[rgrnd][cgrnd] = ' ';
+				rgrnd++;
+				cgrnd += dgrnd;
+				grnd = 0;
+			}
+		}
+		if (grnd == 0)
+		{
+			for (int k = rgrnd - 2; k <= rgrnd + 2; k++)
+			{
+				for (int j = cgrnd - 2; j <= cgrnd + 2; j++)
+				{
+					for (int e = 0; e < 5; e++)
+					{
+						if ((k == enem[e].renemyp && j == enem[e].cenemyp) || (k == enem[e].renemyp && j == enem[e].cenemyp + enem[e].dire) || (k == enem[e].renemyp + 1 && j == enem[e].cenemyp) || (k == enem[e].renemyp + 1 && j == enem[e].cenemyp + 1) || (k == enem[e].renemyp + 1 && j == enem[e].cenemyp - 1))
+						{
+							enem[e].hp -= 100;
+							if (enem[e].hp <= 0 && enem[e].stat == 1)
+							{
+								enem[e].stat = 0;
+								NumEnemy--;
+							}
+						}
+					}
+				}
+			}
+			for (int k = rgrnd - 2; k <= rgrnd + 2; k++)
+			{
+				for (int j = cgrnd - 2; j <= cgrnd + 2; j++)
+				{
+					x[k][j] = 145;
+				}
+			}
+		}
+		ctg++;
+	}
+	void fall(char x[][400], int elestate)
+	{
+		//if hero is standing, check 2 cells below the head for a space. but, if he's crouching, check 1 cell below the head for a space.
+		if (s == 0)
+		{
+			if ((x[rhero + 2][chero] == ' ' || x[rhero + 2][chero] == '+' || x[rhero + 2][chero] == '%' || x[rhero + 2][chero] == '&') && (x[rhero + 1][chero + dir] == ' ' || x[rhero + 1][chero + dir] == '+' || x[rhero + 1][chero + dir] == '%' || x[rhero + 1][chero + dir] == '&'))
+			{
+				rhero++;
+			}
+			if (x[rhero + 2][chero] == '-')
+			{
+				if (elestate == 1)
+				{
+					rhero++;
+				}
+				else
+				{
+					rhero--;
+				}
+			}
+		}
+		else
+		{
+			if ((x[rhero + 1][chero] == ' ' || x[rhero + 1][chero] == '+' || x[rhero + 1][chero] == '%' || x[rhero + 1][chero] == '&') && (x[rhero + 1][chero + dir] == ' ' || x[rhero + 1][chero + dir] == '+' || x[rhero + 1][chero + dir] == '%' || x[rhero + 1][chero + dir] == '&') && (x[rhero + 1][chero - dir] == ' ' || x[rhero + 1][chero - dir] == '+' || x[rhero + 1][chero - dir] == '%' || x[rhero + 1][chero - dir] == '&'))
+			{
+				rhero++;
+			}
+			if (x[rhero + 1][chero] == '-')
+			{
+				if (elestate == 1)
+				{
+					rhero++;
+				}
+				else
+				{
+					rhero--;
+				}
+			}
+		}
+	}
+	void PickUp(char x[][400], int Item[], int ItemRow[], int ItemCol[])
+	{
+		if (x[rhero + 1][chero] == '+' || x[rhero][chero] == '+')
+		{
+			//if health is less than 3, add 3. else, manually make it 5 so as not to exceed limit
+			if (hphero < 76 + perk1)
+			{
+				hphero += 25;
+			}
+			else
+			{
+				hphero = 100 + perk1;
+			}
+			for (int i = 0; i < 5; i++)
+			{
+				if ((rhero + 1 == ItemRow[i]) && (chero == ItemCol[i]))
+				{
+					Item[i] = 0;
+				}
+				if ((rhero == ItemRow[i]) && (chero == ItemCol[i]))
+				{
+					Item[i] = 0;
+				}
+			}
+		}
+		if (x[rhero + 1][chero] == '&' || x[rhero][chero] == '&')
+		{
+			//if mana is less than 71, add 30. else, manually make it 100 so as not to exceed limit
+			if (mana < 71)
+			{
+				mana += 30;
+			}
+			else
+			{
+				mana = 100;
+			}
+			for (int i = 0; i < 5; i++)
+			{
+				if ((rhero + 1 == ItemRow[i]) && (chero == ItemCol[i]))
+				{
+					Item[i] = 0;
+				}
+				if ((rhero == ItemRow[i]) && (chero == ItemCol[i]))
+				{
+					Item[i] = 0;
+				}
+			}
+		}
+		if (x[rhero + 1][chero] == '%' || x[rhero][chero] == '%')
+		{
+			//pick a random number between 1 and 4 to determine which ammo to give
+			int RandomWeapon = 1 + (rand() % 4);
+			if (RandomWeapon == 1)
+			{
+				if (pisb < 90)
+				{
+					pisb += 10;
+				}
+				else
+				{
+					pisb = 99;
+				}
+			}
+			if (RandomWeapon == 2)
+			{
+				if (mgb < 88)
+				{
+					mgb += 12;
+				}
+				else
+				{
+					mgb = 99;
+				}
+			}
+			if (RandomWeapon == 3)
+			{
+				if (sgb < 91)
+				{
+					sgb += 9;
+				}
+				else
+				{
+					sgb = 99;
+				}
+			}
+			if (RandomWeapon == 4)
+			{
+				if (rpgb < 98)
+				{
+					rpgb += 2;
+				}
+				else
+				{
+					rpgb = 99;
+				}
+			}
+			for (int i = 0; i < 5; i++)
+			{
+				if ((rhero + 1 == ItemRow[i]) && (chero == ItemCol[i]))
+				{
+					Item[i] = 0;
+				}
+				if ((rhero == ItemRow[i]) && (chero == ItemCol[i]))
+				{
+					Item[i] = 0;
+				}
+			}
+		}
+	}
+};
+struct Boss
+{
+	int boss = 0, rboss, cboss, dirboss, hpboss, walkb, moveb, sboss, pcb[2], prb[4], ogr, shur, rshur, cshur, dirshur, BossCooldown, BossShoot, rbb1, cbb1, rbb2, cbb2, rbb3, cbb3, dbb;
+	int rgrndboss, cgrndboss, dgrndboss, grndboss, ctgboss, MoveCooldown;
+	Boss()
+	{
+		hpboss = 400, dirboss = -1, walkb = 1, moveb = 1, sboss = 2, pcb[0] = 0, pcb[1] = 0, prb[0] = 2, prb[1] = 1, prb[2] = 1, prb[3] = 0, ogr = rboss, BossCooldown = 0, MoveCooldown = 0;
+		shur = 0, rshur = rboss + 1, cshur = cboss + dirboss * 2, dirshur = dirboss, BossShoot = 0, rgrndboss = rboss, cgrndboss = cboss + dirboss * 3, dgrndboss = dirboss, grndboss = 0, ctgboss = 0;
+	}
+	void DrawBoss(char x[][400])
+	{
+		if (boss == 4)
+		{
+			if (sboss == 2)
+			{
+				ogr = rboss;
+				x[rboss][cboss] = 234;
+				x[rboss + 1][cboss] = 186;
+				if (walkb == 1)
+				{
+					x[rboss + 2][cboss] = 239;
+				}
+				else
+				{
+					x[rboss + 2][cboss] = '|';
+				}
+				if (dirboss == -1)
+				{
+					x[rboss + 1][cboss - 1] = 92;
+				}
+				else
+				{
+					x[rboss + 1][cboss + 1] = 47;
+				}
+			}
+			if (sboss == 1)
+			{
+				x[rboss][cboss] = 234;
+				if (walkb == 1)
+				{
+					x[rboss + 1][cboss] = 239;
+				}
+				else
+				{
+					x[rboss + 1][cboss] = '|';
+				}
+				if (dirboss == -1)
+				{
+					x[rboss][cboss - 1] = 92;
+				}
+				else
+				{
+					x[rboss][cboss + 1] = 47;
+				}
+			}
+			if (sboss == 0)
+			{
+				x[rboss][cboss] = 234;
+				if (dirboss == -1)
+				{
+					x[rboss][cboss - 1] = 92;
+				}
+				else
+				{
+					x[rboss][cboss + 1] = 47;
+				}
+				x[rboss][cboss - dirboss] = 205;
+				if (dirboss == 1)
+				{
+					x[rboss][cboss - dirboss * 2] = '>';
+				}
+				else
+				{
+					x[rboss][cboss - dirboss * 2] = '<';
+				}
+			}
+		}
+		if (boss == 1)
+		{
+			x[rboss][cboss] = 142;
+			x[rboss + 1][cboss] = 206;
+			if (dirboss == 1)
+			{
+				x[rboss + 1][cboss + 1] = 209;
+				x[rboss + 1][cboss + 2] = 209;
+			}
+			else
+			{
+				x[rboss + 1][cboss - 1] = 209;
+				x[rboss + 1][cboss - 2] = 209;
+			}
+			if (walkb == 1)
+			{
+				x[rboss + 2][cboss] = 239;
+			}
+			else
+			{
+				x[rboss + 2][cboss] = '|';
+			}
+		}
+	}
+	void MoveBoss(char x[][400], int rhero, int chero, int dir, int s)
+	{
+		if (boss == 4)
+		{
+			if (dir == dirboss && sboss != 0)
+			{
+				if (chero < cboss - 2 && (rhero == rboss || rhero == rboss + 1 || rhero == rboss + 2 || rhero == rboss - 1))
+				{
+					if (moveb == 1 && x[rboss][cboss + dirboss * 2] == ' ')
+					{
+						if (sboss == 2 && x[rboss + 1][cboss + dirboss * 2] == ' ')
+						{
+							cboss -= 1;
+							walkb *= -1;
+						}
+						if (sboss == 1 || sboss == 0)
+						{
+							cboss -= 1;
+							walkb *= -1;
+						}
+					}
+					moveb *= -1;
+					dirboss = -1;
+				}
+				if (chero > cboss + 2 && (rhero == rboss || rhero == rboss + 1 || rhero == rboss + 2 || rhero == rboss - 1))
+				{
+					if (moveb == 1 && x[rboss][cboss + dirboss * 2] == ' ')
+					{
+						if (sboss == 2 && x[rboss + 1][cboss + dirboss * 2] == ' ')
+						{
+							cboss += 1;
+							walkb *= -1;
+						}
+						if (sboss == 1 || sboss == 0)
+						{
+							cboss += 1;
+							walkb *= -1;
+						}
+					}
+					moveb *= -1;
+					dirboss = 1;
+				}
+			}
+			else
+			{
+				if (chero < cboss - 3 && (rhero == rboss || rhero == rboss + 1 || rhero == rboss + 2 || rhero == rboss - 1))
+				{
+					if (moveb == 1 && x[rboss][cboss + dirboss * 2] == ' ')
+					{
+						if (sboss == 2 && x[rboss + 1][cboss + dirboss * 2] == ' ')
+						{
+							cboss -= 1;
+							walkb *= -1;
+						}
+						if (sboss == 1 || sboss == 0)
+						{
+							cboss -= 1;
+							walkb *= -1;
+						}
+					}
+					moveb *= -1;
+					dirboss = -1;
+				}
+				if (chero > cboss + 3 && (rhero == rboss || rhero == rboss + 1 || rhero == rboss + 2 || rhero == rboss - 1))
+				{
+					if (moveb == 1 && x[rboss][cboss + dirboss * 2] == ' ')
+					{
+						if (sboss == 2 && x[rboss + 1][cboss + dirboss * 2] == ' ')
+						{
+							cboss += 1;
+							walkb *= -1;
+						}
+						if (sboss == 1 || sboss == 0)
+						{
+							cboss += 1;
+							walkb *= -1;
+						}
+					}
+					moveb *= -1;
+					dirboss = 1;
+				}
+			}
+			//Teleportation
+			if ((rhero != rboss + 1 && rhero != rboss && rhero != rboss - 1) || cboss - chero > 20 || cboss - chero < -20)
+			{
+				if ((x[rhero + 2][chero] != ' ' || x[rhero + 1][chero] == '*') && x[rhero - 1][chero - dir * 4] == ' ' && x[rhero][chero - dir * 4] == ' ' && x[rhero + 1][chero - dir * 4] == ' ' && x[rhero + 2][chero - dir * 4] == '*')
+				{
+					for (int k = rboss - 2; k <= rboss + 2; k++)
+					{
+						for (int j = cboss - 2; j <= cboss + 2; j++)
+						{
+							x[k][j] = 177;
+						}
+					}
+					rboss = rhero - 1;
+					cboss = chero - dir * 4;
+					dirboss = dir;
+					ogr = rboss;
+					for (int k = rboss - 2; k <= rboss + 2; k++)
+					{
+						for (int j = cboss - 2; j <= cboss + 2; j++)
+						{
+							x[k][j] = 177;
+						}
+					}
+				}
+			}
+			if (x[ogr][cboss] == ' ' && x[ogr + 1][cboss + dirboss] == ' ' && x[ogr + 2][cboss] == ' ')
+			{
+				if (sboss == 1)
+				{
+					rboss--;
+				}
+				if (sboss == 0)
+				{
+					rboss -= 2;
+				}
+				sboss = 2;
+			}
+			if (x[ogr][cboss + dirboss * 2] != ' ' && x[ogr + 1][cboss + dirboss * 2] == ' ')
+			{
+				if (sboss == 2)
+				{
+					rboss++;
+				}
+				if (sboss == 0)
+				{
+					rboss--;
+				}
+				sboss = 1;
+			}
+			if (x[ogr][cboss + dirboss * 2] != ' ' && x[ogr + 1][cboss + dirboss * 2] != ' ' && x[ogr + 2][cboss + dir * 2] == ' ')
+			{
+				if (sboss == 2)
+				{
+					rboss += 2;
+				}
+				if (sboss == 1)
+				{
+					rboss++;
+				}
+				sboss = 0;
+			}
+		}
+		if (boss == 1)
+		{
+			//Start timer when player makes a move and a boss move is available
+			if ((rhero < rboss && x[rhero + 2][chero] != ' ' && x[rhero + 2][cboss] != ' ' && x[rhero + 1][cboss] == ' ' && x[rhero][cboss] == ' ' && x[rhero - 1][cboss] == ' ') || (rhero > rboss + 2 && (x[rhero + 2][chero] != ' ' || x[rhero + 1][chero] != ' ') && (x[rhero + 2][cboss] != ' ' && x[rhero + 1][cboss] == ' ' && x[rhero][cboss] == ' ' && x[rhero - 1][cboss] == ' ' || x[rhero + 1][cboss] != ' ' && x[rhero][cboss] == ' ' && x[rhero - 1][cboss] == ' ' && x[rhero - 2][cboss] == ' ')) || ((chero < cboss && dirboss == 1) || (chero > cboss && dirboss == -1)))
+			{
+				if (MoveCooldown == 0 && moveb == 1)
+				{
+					moveb = -1;
+					MoveCooldown = 30;
+				}
+			}
+			if (moveb == -1 && MoveCooldown == 0)
+			{
+				//Jumping onto platform
+				if (rhero < rboss + 1 && (x[rhero + 2 + s][chero] != ' ') && (x[rhero + 2 + s][cboss] != ' ' && x[rhero + 1 - s][cboss] == ' ' && x[rhero + s][cboss] == ' ' && x[rhero - 1 + s][cboss] == ' '))
+				{
+					rboss--;
+					if (x[rboss + 3][cboss] != ' ')
+					{
+						moveb = 1;
+					}
+				}
+				//Dropping from platform
+				if (rhero > rboss + 2 && (x[rhero + 2 + s][chero] != ' ') && (x[rhero + 2 + s][cboss] != ' ' && x[rhero + 1 - s][cboss] == ' ' && x[rhero + s][cboss] == ' ' && x[rhero - 1 + s][cboss] == ' '))
+				{
+					rboss++;
+					if (s == 0 && rhero == rboss + 2)
+					{
+						rboss++;
+						if (x[rboss + 3][cboss] != ' ')
+						{
+							moveb = 1;
+						}
+					}
+				}
+				if (((chero < cboss && dirboss == 1) || (chero > cboss && dirboss == -1)) && x[rboss + 3][cboss] != ' ')
+				{
+					dirboss *= -1;
+					moveb = 1;
+				}
+			}
+		}
+	}
+	void BossAttack(char x[][400], int rhero, int chero, int dir, int& hphero, int l)
+	{
+		if (boss == 4)
+		{
+			if (dir == dirboss && sboss != 0)
+			{
+				if ((rhero == rboss + 1 || rhero == rboss || rhero == rboss + 2) && chero == cboss + dirboss * 2)
+				{
+					if (sboss == 2)
+					{
+						if (dirboss == 1)
+						{
+							x[rboss + 1][cboss + dirboss] = 92;
+						}
+						else
+						{
+							x[rboss + 1][cboss + dirboss] = 47;
+						}
+					}
+					else
+					{
+						if (dirboss == 1)
+						{
+							x[rboss][cboss + dirboss] = 92;
+						}
+						else
+						{
+							x[rboss][cboss + dirboss] = 47;
+						}
+					}
+					if (l == -1)
+					{
+						hphero -= 20;
+					}
+				}
+			}
+			else
+			{
+				if ((rhero == rboss + 1 || rhero == rboss || rhero == rboss + 2) && chero == cboss + dirboss * 3)
+				{
+					if (sboss == 2)
+					{
+						if (dirboss == 1)
+						{
+							x[rboss + 1][cboss + dirboss] = 92;
+						}
+						else
+						{
+							x[rboss + 1][cboss + dirboss] = 47;
+						}
+					}
+					else
+					{
+						if (dirboss == 1)
+						{
+							x[rboss][cboss + dirboss] = 92;
+						}
+						else
+						{
+							x[rboss][cboss + dirboss] = 47;
+						}
+					}
+					if (l == -1)
+					{
+						hphero -= 20;
+					}
+				}
+			}
+			if ((cboss - chero > 5 || cboss - chero < -5) && (rhero == rboss + 1 || rhero == rboss))
+			{
+				if (BossCooldown == 0)
+				{
+					rshur = rboss + 1;
+					cshur = cboss + dirboss * 2;
+					dirshur = dirboss;
+					shur = 1;
+					BossCooldown = 50;
+				}
+			}
+		}
+		if (boss == 1)
+		{
+			if ((rhero == rboss + 1 || rhero == rboss + 2 || rhero == rboss) && (chero - cboss <= 10 && chero - cboss >= -10))
+			{
+				if (grndboss == 0 && BossShoot == 0 && BossCooldown == 0)
+				{
+					rgrndboss = rboss;
+					cgrndboss = cboss + dirboss * 3;
+					dgrndboss = dirboss;
+					grndboss = 1;
+					BossCooldown = 100;
+				}
+			}
+			if (rhero == rboss + 1 || rhero == rboss + 2 || rhero == rboss)
+			{
+				if (BossShoot == 0 && grndboss == 0)
+				{
+					rbb1 = rboss;
+					cbb1 = cboss + dirboss * 4;
+					rbb2 = rboss + 1;
+					cbb2 = cboss + dirboss * 3;
+					rbb3 = rboss + 2;
+					cbb3 = cboss + dirboss * 4;
+					dbb = dirboss;
+					BossShoot = 1;
+				}
+			}
+		}
+	}
+	void MoveBossProjectile(char x[][400], int rhero, int chero, int dir, int& hphero, int s, int l)
+	{
+		if (boss == 4 && shur == 1)
+		{
+			x[rshur][cshur] = 145;
+			if (x[rshur][cshur + dirshur] == ' ' && ((rshur != rhero) || (cshur != chero && cshur != chero + dir)) && ((rshur != rhero + 1) || (cshur != chero)))
+			{
+				cshur += dirshur;
+			}
+			else
+			{
+				if (((rshur == rhero) && (cshur + dirshur == chero || cshur + dirshur == chero + dir)) || ((rshur == rhero + 1) && (cshur + dirshur == chero)))
+				{
+					if (l == -1)
+					{
+						hphero -= 15;
+					}
+				}
+				rshur = rboss + 1;
+				cshur = cshur + dirboss * 2;
+				shur = 0;
+			}
+		}
+		if (boss == 1 && BossShoot == 1)
+		{
+			x[rbb1][cbb1] = '.';
+			x[rbb2][cbb2] = '.';
+			x[rbb3][cbb3] = '.';
+			if (cbb1 > -1 && x[rbb1][cbb1 + dbb] == ' ' && ((rbb1 != rhero) || (cbb1 + dbb != chero && cbb1 + dbb != chero + dir)) && ((rbb1 != rhero + 1) || (cbb1 + dbb != chero)))
+			{
+				cbb1 += dbb;
+			}
+			else
+			{
+				if (((rbb1 == rhero) && (cbb1 + dbb == chero || cbb1 + dbb == chero + dir)) || ((rbb1 == rhero + 1) && (cbb1 + dbb == chero)))
+				{
+					if (l == -1)
+					{
+						hphero -= 25;
+					}
+				}
+				cbb1 = -1;
+			}
+			if (cbb2 > -1 && x[rbb2][cbb2 + dbb] == ' ' && ((rbb2 != rhero) || (cbb2 + dbb != chero && cbb2 + dbb != chero + dir)) && ((rbb2 != rhero + 1) || (cbb2 + dbb != chero)))
+			{
+				cbb2 += dbb;
+			}
+			else
+			{
+				if (((rbb2 == rhero) && (cbb2 + dbb == chero || cbb2 + dbb == chero + dir)) || ((rbb2 == rhero + 1) && (cbb2 + dbb == chero)))
+				{
+					if (l == -1)
+					{
+						hphero -= 25;
+					}
+				}
+				cbb2 = -1;
+			}
+			if (cbb3 > -1 && x[rbb3][cbb3 + dbb] == ' ' && ((rbb3 != rhero) || (cbb3 + dbb != chero && cbb3 + dbb != chero + dir)) && ((rbb3 != rhero + 1) || (cbb3 + dbb != chero)))
+			{
+				cbb3 += dbb;
+			}
+			else
+			{
+				if (((rbb3 == rhero) && (cbb3 + dbb == chero || cbb3 + dbb == chero + dir)) || ((rbb3 == rhero + 1) && (cbb3 + dbb == chero)))
+				{
+					if (l == -1)
+					{
+						hphero -= 25;
+					}
+				}
+				cbb3 = -1;
+			}
+			if (cbb1 == -1 && cbb2 == -1 && cbb3 == -1)
+			{
+				BossShoot = 0;
+			}
+		}
+		if (boss == 1 && grndboss == 1)
+		{
+			//During first 3 frames, move horizontally only
+			if (ctgboss < 4)
+			{
+				if (x[rgrndboss][cgrndboss + dgrndboss] == ' ')
+				{
+					cgrndboss += dgrndboss;
+					x[rgrndboss][cgrndboss] = 232;
+				}
+				if (x[rgrndboss][cgrndboss + dgrndboss] != ' ')
+				{
+					x[rgrndboss][cgrndboss] = ' ';
+					x[rgrndboss][cgrndboss + (dgrndboss / 2)] = 232;
+					cgrndboss += dgrndboss;
+					grndboss = 0;
+				}
+			}
+			//After 3rd frame, move diagonally downwards until the grenade reaches an object
+			if (ctgboss > 3)
+			{
+				if (x[rgrndboss + 1][cgrndboss + dgrndboss] == ' ')
+				{
+					rgrndboss++;
+					cgrndboss += dgrndboss;
+					x[rgrndboss][cgrndboss] = 232;
+				}
+				if (x[rgrndboss + 1][cgrndboss + dgrndboss] != ' ')
+				{
+					x[rgrndboss][cgrndboss] = ' ';
+					rgrndboss++;
+					cgrndboss += dgrndboss;
+					grndboss = 0;
+				}
+			}
+			if (grndboss == 0)
+			{
+				ctgboss = 0;
+				for (int k = rgrndboss - 2; k <= rgrndboss + 2; k++)
+				{
+					for (int j = cgrndboss - 2; j <= cgrndboss + 2; j++)
+					{
+						if (s == 0)
+						{
+							if (k == rhero && j == chero)
+							{
+								ctgboss++;
+							}
+							if (k == rhero + 1 && j == chero)
+							{
+								ctgboss++;
+							}
+							if (k == rhero && j == chero + dir)
+							{
+								ctgboss++;
+							}
+							if (l == -1)
+							{
+								hphero -= 25 * ctgboss;
+							}
+						}
+						else
+						{
+							if (k == rhero && j == chero)
+							{
+								ctgboss++;
+							}
+							if (k == rhero && j == chero + dir)
+							{
+								ctgboss++;
+							}
+							if (k == rhero && j == chero - dir)
+							{
+								ctgboss++;
+							}
+							if (l == -1)
+							{
+								hphero -= 25 * ctgboss;
+							}
+						}
+					}
+				}
+				for (int k = rgrndboss - 2; k <= rgrndboss + 2; k++)
+				{
+					for (int j = cgrndboss - 2; j <= cgrndboss + 2; j++)
+					{
+						x[k][j] = 145;
+					}
+				}
+			}
+			ctgboss++;
+		}
+	}
+};
+struct finalboss
+{
+	int rfboss = 38, cfboss = 25, dirfb = -1, statefb = 1, rfbullet = rfboss + 1, cfbullet = cfboss, mvfboss = 1, dirfbrope = 0, rope = 0, ewboss = 0, rrope = rfboss, crope = cfboss, shoot = 0, grab = 0, hpfboss = 400, statefboss = 1;;
+	void drawfinalboss(char x[][400])
+	{
+		if(statefboss ==1)
+		{
+			///head//
+			x[rfboss][cfboss] = '(';
+			x[rfboss][cfboss + 1] = 'v';
+			x[rfboss][cfboss + 2] = '_';
+			x[rfboss][cfboss + 3] = 'v';
+			x[rfboss][cfboss + 4] = ')';
+			///body
+			x[rfboss + 1][cfboss + 2] = 186;
+			///leg///
+			x[rfboss + 2][cfboss + 2] = 239;
+			///weapon
+			if (ewboss == 0)
+			{
+				if (dirfb == -1)
+				{
+					x[rfboss + 1][cfboss] = 209;
+				}
+				if (dirfb == 1)
+				{
+					x[rfboss + 1][cfboss + 3] = 209;
+
+				}
+			}
+			if (ewboss == 1)
+			{
+				if (dirfb == -1)
+				{
+					x[rfboss + 1][cfboss] = 209;
+					x[rfboss + 1][cfboss + 1] = 183;
+					x[rfboss + 1][cfboss - 1] = 205;
+
+				}
+				if (dirfb == 1)
+				{
+					x[rfboss + 1][cfboss + 4] = 209;
+					x[rfboss + 1][cfboss + 3] = 214;
+					x[rfboss + 1][cfboss + 5] = 205;
+
+				}
+			}
+		}
+	}
+	void finalbossaction(char x[][400], int rhero, int chero, int& cfboss)
+	{
+		if(statefboss ==1)
+		{
+			if (rfboss + 1 == rhero && chero > cfboss && cfboss + 10 < chero)
+			{
+				dirfb = 1;
+				if (x[rfboss][cfboss + 5] == ' ' && x[rfboss + 1][cfboss + 1] == ' ' && x[rfboss + 2][cfboss + 1] == ' ')
+				{
+					cfboss++;
+				}
+			}
+			if (rfboss + 1 == rhero && chero < cfboss && cfboss - 10 > chero)
+			{
+				dirfb = -1;
+				if (x[rfboss][cfboss - 1] == ' ' && x[rfboss + 1][cfboss - 1] == ' ' && x[rfboss + 2][cfboss - 1] == ' ')
+				{
+					cfboss--;
+				}
+			}
+		}
+	}
+	void finalbossBulletDirection(char x[][400], int rhero, int chero, int& dirfb)
+	{
+		if (statefboss == 1)
+		{
+			if ((rhero == rfboss && (chero > cfboss && chero < cfboss + 10)) || (rhero == rfboss && (chero < cfboss && chero > cfboss - 10)) || (chero == cfboss && (rhero <  rfboss && rhero >  rfboss - 10)) || (rhero < rfboss && (chero > cfboss && chero < cfboss + 10)) || (rhero < rfboss && (chero < cfboss && chero >cfboss - 10)) || ((rhero > rfboss && (chero < cfboss && chero > cfboss - 10))) || ((rhero > rfboss && (chero > cfboss && chero < cfboss + 10))))
+			{
+				shoot = 1;
+				if ((rhero == rfboss + 1 && (chero > cfboss && chero < cfboss + 10)) && rfbullet == rfboss && cfbullet == cfboss)
+				{
+					cfbullet += 4;
+					dirfb = 1;
+					mvfboss = 0;
+				}
+				if ((rhero == rfboss + 1 && (chero < cfboss && chero > cfboss - 10)) && rfbullet == rfboss && cfbullet == cfboss)
+				{
+					cfbullet -= 3;
+					dirfb = -1;
+					mvfboss = 0;
+				}
+			}
+			else
+			{
+				if (rfbullet == rfboss + 1 && cfbullet == cfboss)
+				{
+					mvfboss = 1;
+				}
+			}
+		}
+	}
+	void drawfinalbosbullet(char x[][400])
+	{
+		if(statefboss==1)
+		{
+			if (mvfboss == 0)
+			{
+				rfbullet = rfboss + 1;
+				if (ewboss == 0)
+				{
+					x[rfbullet][cfbullet] = 004;
+				}
+				if (ewboss == 1)
+				{
+					if (dirfb == 1 && x[rfbullet][cfbullet + 1] == ' ')
+					{
+						x[rfbullet][cfbullet] = 004;
+						x[rfbullet + 1][cfbullet - 1] = 004;
+						x[rfbullet - 1][cfbullet - 1] = 004;
+					}
+					if (dirfb == -1 && x[rfbullet][cfbullet - 1] == ' ')
+					{
+						cfbullet -= 1;
+						x[rfbullet][cfbullet] = 004;
+						x[rfbullet + 1][cfbullet + 1] = 004;
+						x[rfbullet - 1][cfbullet + 1] = 004;
+					}
+				}
+
+			}
+		}
+	}
+	void finalbossgrabhero(char x[][400], int& rhero, int& chero, int& grab, int& hphero)
+	{
+		if(statefboss==1)
+		{
+			ewboss = 1;
+			if (rhero<rfboss && chero>cfboss)
+			{
+				grab = 1;
+				if (rhero == rfboss + 1)
+				{
+					chero = cfboss - 4;
+					hphero -= 75;
+					grab = 0;
+				}
+				if (rhero != rfboss + 1)
+				{
+					rhero++;
+				}
+			}
+			if (rhero < rfboss && chero < cfboss)
+			{
+				grab = 1;
+				if (rhero == rfboss + 1)
+				{
+					chero = cfboss + 4;
+					hphero -= 75;
+					grab = 0;
+				}
+				if (rhero != rfboss + 1)
+				{
+					rhero++;
+				}
+			}
+			grab = 0;
+			ewboss = 0;
+		}
+	}
+	void movefinalbossbullets(char x[][400])
+	{
+		if(statefboss==1)
+		{
+			if (ewboss == 0)
+			{
+				if (dirfb == 1)
+				{
+					if (x[rfbullet][cfbullet + 1] == ' ')
+					{
+						cfbullet++;
+					}
+					else
+					{
+						rfbullet = rfboss;
+						cfbullet = cfboss + 4;
+					}
+				}
+				if (dirfb == -1)
+				{
+					if (x[rfbullet][cfbullet - 1] == ' ')
+					{
+						cfbullet--;
+					}
+					else
+					{
+						rfbullet = rfboss;
+						cfbullet = cfboss;
+					}
+				}
+			}
+
+			if (ewboss == 1)
+			{
+				if (dirfb == 1)
+				{
+					if (x[rfbullet][cfbullet + 1] == ' ')
+					{
+						cfbullet++;
+					}
+					else
+					{
+						rfbullet = rfboss;
+						cfbullet = cfboss + 3;
+					}
+				}
+				if (dirfb == -1)
+				{
+					if (x[rfbullet][cfbullet - 1] == ' ')
+					{
+						cfbullet--;
+					}
+					else
+					{
+						rfbullet = rfboss;
+						cfbullet = cfboss;
+					}
+				}
+			}
+		}
+	}
+	void finalbossdamagehero(char x[][400], int rhero, int chero, int& hphero, int dir, int l, int& aphero)
+	{
+		if(statefboss==1)
+		{
+			if (((rfbullet == rhero && cfbullet == chero + 2) || (rfbullet == rhero && cfbullet == chero - 2) || (rfbullet == rhero + 1 && cfbullet == chero)) && l == -1)
+			{
+				if (ewboss == 0)
+				{
+					if (aphero > 0)
+					{
+						hphero -= 50;
+						aphero -= 50;
+					}
+					else
+					{
+						hphero -= 50;
+					}
+				}
+				if (ewboss == 1)
+				{
+					if (aphero > 0)
+					{
+						hphero -= 75;
+						aphero -= 75;
+					}
+					else
+					{
+						hphero -= 75;
+					}
+				}
+			}
+		}
+	}
+};
+int main()
+{
+	char x[105][400], inpt;
+	Map m;
+	Hero h;
+	Enemy enem[5];
+	Boss b;
+	finalboss fb;
+	int ce = 0, i, n = 0, laser = 1, movetimer = 0, elestate = 1, loadtimer, nextmap = 0, Checkpoint = 7, bosslimit = 0, NumEnemy;
+	b.rboss = 12, b.cboss = 43, b.ogr = b.rboss;
+	int ctgrabcooldown = 0, fgrab = 0;
+	for (; ;)
+	{
+		if (m.map == 5)
+		{
+			if (ce == 0)
+			{
+				if (Checkpoint == 9)
+				{
+					h.rhero = 39;
+					h.chero = 2;
+					for (int i = 0; i < 5; i++)
+					{
+						enem[4].renemyp = 0;
+						enem[4].cenemyp = 0;
+						enem[4].ewe = 0;
+						enem[i].rbullet = 0;
+						enem[i].cbullet = 0;
+						enem[i].stat = 0;
+						enem[i].hp = 0;
+					}
+					NumEnemy = 0;
+				}
+				ce++;
+			}
+			while (!_kbhit())
+			{
+				system("cls");
+				if (h.hphero < 1)
+				{
+					break;
+				}
+				m.GenMap(x, laser, movetimer, elestate);
+				h.PickUp(x, m.Item, m.ItemRow, m.ItemCol);
+				h.DrawHero(x);
+				fb.finalbossBulletDirection(x, h.rhero, h.chero, fb.dirfb);
+				fb.finalbossaction(x, h.rhero, h.chero, fb.cfboss);
+				fb.drawfinalboss(x);
+				fb.finalbossBulletDirection(x, h.rhero, h.chero, fb.dirfb);
+				fb.drawfinalbosbullet(x);
+				fb.movefinalbossbullets(x);
+				fb.finalbossdamagehero(x, h.rhero, h.chero, h.hphero, h.dir, h.l, h.aphero);
+				if (fb.hpfboss <= 0)
+				{
+					fb.statefb = 0;
+				}
+				if (h.rhero < fb.rfboss)
+				{
+					if (fgrab == 0)
+					{
+						ctgrabcooldown++;
+					}
+				}
+				else
+				{
+					if ((h.rhero == fb.rfboss))
+					{
+						ctgrabcooldown = 0;
+					}
+				}
+				if (ctgrabcooldown == 100)
+				{
+					fgrab = 1;
+					fb.finalbossgrabhero(x, h.rhero, h.chero, fb.grab, h.hphero);
+				}
+				//Move bullets every frame regardless of user input
+				//void MoveBullets(char x[][400], int Door[], int DoorRow[], int DoorCol[], int rboss, int cboss, int dirboss, int boss, int& hpboss, int sboss, Enemy enem[], int& NumEnemy,int rfboss,int cfboss,int& hpfboss,int dirfb,int& statefb)
+				h.MoveBullets(x, m.Door, m.DoorRow, m.DoorCol, b.rboss, b.cboss, b.dirboss, b.boss, b.hpboss, b.sboss, enem, NumEnemy,fb.rfboss,fb.cfboss,fb.hpfboss,fb.dirfb,fb.statefb);
+				if (h.ew == 5)
+				{
+					//skip the if the first time to allow the DrawHero to show the first part of the animation
+					if (h.knife == 1)
+					{
+						h.Knife(x, enem, NumEnemy);
+						h.ew = h.z;
+					}
+					h.knife++;
+				}
+				//Move Grenade
+				if (h.grnd == 1)
+				{
+					h.Grenade(x, enem, NumEnemy);
+				}
+				//only enter to decrease cooldown counter if an ability has been performed.
+				if (h.cooldownI > 0)
+				{
+					h.cooldownI--;
+				}
+				if (h.cooldownO > 0)
+				{
+					if (h.aphero > 0 && h.cooldownO == 400)
+					{
+						h.aphero = 0;
+					}
+					h.cooldownO--;
+				}
+				if (h.cooldownP > 0)
+				{
+					h.cooldownP--;
+				}
+				if (h.cooldownU > 0)
+				{
+					h.cooldownU--;
+				}
+				h.UI(x, b.boss, b.hpboss);
+				DispScroll(x, h.rhero, h.chero);
+				if (h.ctj == 6 || h.ctdj == 5)
+				{
+					h.tf = 0;
+					h.fall(x, elestate);
+				}
+				if (x[h.rhero + 2][h.chero] != ' ' || x[h.rhero + 1][h.chero + h.dir] != ' ')
+				{
+					h.ctj = 0;
+					h.ctdj = 0;
+				}
+				if (h.tf == 1)
+				{
+					if (h.ctw == 1)
+					{
+						if (x[h.rhero - 1][h.chero] != ' ' || x[h.rhero - 1][h.chero + h.dir] != ' ')
+						{
+							h.ctj = 5;
+						}
+						if (h.ctj < 5)
+						{
+							h.rhero--;
+						}
+						h.ctj++;
+					}
+					if (h.ctw == 2)
+					{
+						if (x[h.rhero - 1][h.chero] != ' ' || x[h.rhero - 1][h.chero + h.dir] != ' ')
+						{
+							h.ctdj = 4;
+						}
+						if (h.ctdj < 4)
+						{
+							h.rhero--;
+						}
+						h.ctdj++;
+					}
+				}
+				h.fall(x, elestate);
+			}
+			if (h.hphero > 0)
+			{
+				inpt = _getch();
+				h.Action(x, inpt, laser, m.map, nextmap, Checkpoint, ce, m.Level, fb.grab);
+				h.DrawHero(x);
+			}
+			else
+			{
+				m.map = -3;
+			}
+		}
+		if (m.map == 9)
+		{
+			if (ce == 0)
+			{
+				for (int i = 0; i < 20; i++)
+				{
+					m.Door[i] = 1;
+				}
+				ce++;
+			}
+			while (!_kbhit())
+			{
+				system("cls");
+				m.GenMap(x, laser, movetimer, elestate);
+				h.PickUp(x, m.Item, m.ItemRow, m.ItemCol);
+				h.DrawHero(x);
+				//Move bullets every frame regardless of user input
+				h.MoveBullets(x, m.Door, m.DoorRow, m.DoorCol, b.rboss, b.cboss, b.dirboss, b.boss, b.hpboss, b.sboss, enem, NumEnemy, fb.rfboss, fb.cfboss, fb.hpfboss, fb.dirfb, fb.statefb);
+				if (h.ew == 5)
+				{
+					//skip the if the first time to allow the DrawHero to show the first part of the animation
+					if (h.knife == 1)
+					{
+						h.Knife(x, enem, NumEnemy);
+						h.ew = h.z;
+					}
+					h.knife++;
+				}
+				//Move Grenade
+				if (h.grnd == 1)
+				{
+					h.Grenade(x, enem, NumEnemy);
+				}
+				//only enter to decrease cooldown counter if an ability has been performed.
+				if (h.cooldownI > 0)
+				{
+					h.cooldownI--;
+				}
+				if (h.cooldownO > 0)
+				{
+					if (h.aphero > 0 && h.cooldownO == 400)
+					{
+						h.aphero = 0;
+					}
+					h.cooldownO--;
+				}
+				if (h.cooldownP > 0)
+				{
+					h.cooldownP--;
+				}
+				if (h.cooldownU > 0)
+				{
+					h.cooldownU--;
+				}
+				h.UI(x, b.boss, b.hpboss);
+				DispScroll(x, h.rhero, h.chero);
+				if (h.ctj == 6 || h.ctdj == 5)
+				{
+					h.tf = 0;
+					h.fall(x, elestate);
+				}
+				if (x[h.rhero + 2][h.chero] != ' ' || x[h.rhero + 1][h.chero + h.dir] != ' ')
+				{
+					h.ctj = 0;
+					h.ctdj = 0;
+				}
+				if (h.tf == 1)
+				{
+					if (h.ctw == 1)
+					{
+						if (x[h.rhero - 1][h.chero] != ' ' || x[h.rhero - 1][h.chero + h.dir] != ' ')
+						{
+							h.ctj = 5;
+						}
+						if (h.ctj < 5)
+						{
+							h.rhero--;
+						}
+						h.ctj++;
+					}
+					if (h.ctw == 2)
+					{
+						if (x[h.rhero - 1][h.chero] != ' ' || x[h.rhero - 1][h.chero + h.dir] != ' ')
+						{
+							h.ctdj = 4;
+						}
+						if (h.ctdj < 4)
+						{
+							h.rhero--;
+						}
+						h.ctdj++;
+					}
+				}
+				h.fall(x, elestate);
+			}
+			inpt = _getch();
+			h.Action(x, inpt, laser, m.map, nextmap, Checkpoint, ce, m.Level, fb.grab);
+			h.DrawHero(x);
+		}
+		if (m.map == -3)
+		{
+			if (!_kbhit())
+			{
+				system("cls");
+				m.GenMap(x, laser, movetimer, elestate);
+				Disp(x);
+			}
+			else
+			{
+				ce = 0;
+				if (Checkpoint == 1 || Checkpoint == 2)
+				{
+					m.map = 1;
+				}
+				if (Checkpoint == 3 || Checkpoint == 4)
+				{
+					m.map = 2;
+				}
+				if (Checkpoint == 5 || Checkpoint == 6)
+				{
+					m.map = 3;
+				}
+				if (Checkpoint == 7 || Checkpoint == 8)
+				{
+					m.map = 4;
+				}
+				if (Checkpoint == 9 || Checkpoint == 10)
+				{
+					m.map = 5;
+				}
+			}
+		}
+		if (m.map == -2)
+		{
+			while (!_kbhit())
+			{
+				system("cls");
+				m.GenMap(x, laser, movetimer, elestate);
+				Disp(x);
+			}
+			if (_kbhit())
+			{
+				inpt = _getch();
+				m.MenuControls(x, inpt, nextmap);
+			}
+		}
+		if (m.map == -1)
+		{
+			loadtimer = 5;
+			for (i = loadtimer; i > 0; i--)
+			{
+				system("cls");
+				m.GenMap(x, laser, movetimer, elestate);
+				Disp(x);
+			}
+			m.map = nextmap;
+		}
+		if (m.map == 0)
+		{
+			while (!_kbhit())
+			{
+				system("cls");
+				m.GenMap(x, laser, movetimer, elestate);
+				Disp(x);
+			}
+			if (_kbhit())
+			{
+				inpt = _getch();
+				m.MenuControls(x, inpt, nextmap);
+			}
+		}
+		if (m.map > 0 && m.map < 5)
+		{
+			if (ce == 0)
+			{
+				h.s = 0;
+				h.hphero = 100 + h.perk1;
+				b.hpboss == 400;
+				bosslimit = 0;
+				m.Item[0] = 1;
+				m.Item[1] = 2;
+				m.Item[2] = 3;
+				m.Item[3] = 3;
+				m.Item[4] = 1;
+				for (int i = 0; i < 20; i++)
+				{
+					m.Door[i] = 1;
+				}
+				if (Checkpoint == 1)
+				{
+					h.rhero = 18;
+					h.chero = 2;
+					if (m.Level[0] == 0)
+					{
+						enem[0].renemyp = 13;
+						enem[0].cenemyp = 45;
+						enem[0].ewe = 3;
+						enem[1].renemyp = 3;
+						enem[1].cenemyp = 48;
+						enem[1].ewe = 2;
+						enem[2].renemyp = 8;
+						enem[2].cenemyp = 70;
+						enem[2].ewe = 2;
+						enem[3].renemyp = 8;
+						enem[3].cenemyp = 3;
+						enem[3].ewe = 1;
+						enem[4].renemyp = 18;
+						enem[4].cenemyp = 68;
+						enem[4].ewe = 1;
+						for (int i = 0; i < 5; i++)
+						{
+							enem[i].rbullet = enem[i].renemyp;
+							enem[i].cbullet = enem[i].cenemyp;
+							enem[i].stat = 1;
+							enem[i].hp = 100;
+						}
+						NumEnemy = 5;
+					}
+				}
+				if (Checkpoint == 2 && m.Level[0] == 0)
+				{
+					b.rboss = 12;
+					b.cboss = 45;
+				}
+				if (Checkpoint == 3)
+				{
+					h.rhero = 13;
+					h.chero = 2;
+					if (m.Level[1] == 0)
+					{
+						enem[0].renemyp = 12;
+						enem[0].cenemyp = 55;
+						enem[0].ewe = 3;
+						enem[1].renemyp = 2;
+						enem[1].cenemyp = 48;
+						enem[1].ewe = 3;
+						enem[2].renemyp = 4;
+						enem[2].cenemyp = 30;
+						enem[2].ewe = 2;
+						enem[3].renemyp = 8;
+						enem[3].cenemyp = 6;
+						enem[3].ewe = 1;
+						enem[4].renemyp = 15;
+						enem[4].cenemyp = 27;
+						enem[4].ewe = 1;
+						for (int i = 0; i < 5; i++)
+						{
+							enem[i].rbullet = enem[i].renemyp;
+							enem[i].cbullet = enem[i].cenemyp;
+							enem[i].stat = 1;
+							enem[i].hp = 100;
+						}
+						NumEnemy = 5;
+					}
+				}
+				if (Checkpoint == 4 && m.Level[1] == 0)
+				{
+					b.rboss = 11;
+					b.cboss = 46;
+				}
+				if (Checkpoint == 5)
+				{
+					h.rhero = 18;
+					h.chero = 2;
+					if (m.Level[2] == 0)
+					{
+						enem[0].renemyp = 12;
+						enem[0].cenemyp = 55;
+						enem[0].ewe = 3;
+						enem[1].renemyp = 18;
+						enem[1].cenemyp = 48;
+						enem[1].ewe = 1;
+						enem[2].renemyp = 6;
+						enem[2].cenemyp = 30;
+						enem[2].ewe = 2;
+						enem[3].renemyp = 6;
+						enem[3].cenemyp = 62;
+						enem[3].ewe = 3;
+						enem[4].renemyp = 12;
+						enem[4].cenemyp = 33;
+						enem[4].ewe = 1;
+						for (int i = 0; i < 5; i++)
+						{
+							enem[i].rbullet = enem[i].renemyp;
+							enem[i].cbullet = enem[i].cenemyp;
+							enem[i].stat = 1;
+							enem[i].hp = 100;
+						}
+						NumEnemy = 5;
+					}
+				}
+				if (Checkpoint == 6 && m.Level[2] == 0)
+				{
+					b.rboss = 11;
+					b.cboss = 46;
+				}
+				if (Checkpoint == 7)
+				{
+					h.rhero = 18;
+					h.chero = 2;
+					if (m.Level[3] == 0)
+					{
+						enem[0].renemyp = 11;
+						enem[0].cenemyp = 70;
+						enem[0].ewe = 1;
+						enem[1].renemyp = 18;
+						enem[1].cenemyp = 30;
+						enem[1].ewe = 1;
+						enem[2].renemyp = 8;
+						enem[2].cenemyp = 10;
+						enem[2].ewe = 3;
+						enem[3].renemyp = 6;
+						enem[3].cenemyp = 62;
+						enem[3].ewe = 3;
+						enem[4].renemyp = 12;
+						enem[4].cenemyp = 33;
+						enem[4].ewe = 2;
+						for (int i = 0; i < 5; i++)
+						{
+							enem[i].rbullet = enem[i].renemyp;
+							enem[i].cbullet = enem[i].cenemyp;
+							enem[i].stat = 1;
+							enem[i].hp = 100;
+						}
+						NumEnemy = 5;
+					}
+				}
+				if (Checkpoint == 8 && m.Level[3] == 0)
+				{
+					b.rboss = 10;
+					b.cboss = 50;
+				}
+				if (Checkpoint == 9)
+				{
+					h.rhero = 39;
+					h.chero = 2;
+					for (int i = 0; i < 5; i++)
+					{
+						enem[4].renemyp = 0;
+						enem[4].cenemyp = 0;
+						enem[4].ewe = 0;
+						enem[i].rbullet = 0;
+						enem[i].cbullet = 0;
+						enem[i].stat = 0;
+						enem[i].hp = 0;
+					}
+					NumEnemy = 0;
+				}
+				ce++;
+			}
+			while (!_kbhit())
+			{
+				system("cls");
+				if (h.hphero < 1)
+				{
+					break;
+				}
+				if (b.hpboss < 1)
+				{
+					b.boss = 0;
+					bosslimit = 1;
+				}
+				m.Stage(NumEnemy, b.boss, b.hpboss, Checkpoint, ce, bosslimit);
+				m.GenMap(x, laser, movetimer, elestate);
+				for (int i = 0; i < 5; i++)
+				{
+					enem[i].EnemyBulletDirection(x, h.rhero, h.chero);
+					enem[i].DrawEnemy(x);
+					if (enem[i].mv == 0)
+					{
+						enem[i].DrawEnemyBullet(x);
+					}
+					enem[i].MoveEnemyBullet(x, h.rhero, h.chero, h.dir, h.hphero, h.aphero, h.l);
+				}
+				b.MoveBoss(x, h.rhero, h.chero, h.dir, h.s);
+				b.DrawBoss(x);
+				b.BossAttack(x, h.rhero, h.chero, h.dir, h.hphero, h.l);
+				b.MoveBossProjectile(x, h.rhero, h.chero, h.dir, h.hphero, h.s, h.l);
+				h.PickUp(x, m.Item, m.ItemRow, m.ItemCol);
+				h.DrawHero(x);
+				//Move bullets every frame regardless of user input
+				h.MoveBullets(x, m.Door, m.DoorRow, m.DoorCol, b.rboss, b.cboss, b.dirboss, b.boss, b.hpboss, b.sboss, enem, NumEnemy, fb.rfboss, fb.cfboss, fb.hpfboss, fb.dirfb, fb.statefb);
+				if (h.ew == 5)
+				{
+					//skip the if the first time to allow the DrawHero to show the first part of the animation
+					if (h.knife == 1)
+					{
+						h.Knife(x, enem, NumEnemy);
+						h.ew = h.z;
+					}
+					h.knife++;
+				}
+				//Move Grenade
+				if (h.grnd == 1)
+				{
+					h.Grenade(x, enem, NumEnemy);
+				}
+				//only enter to decrease cooldown counter if an ability has been performed.
+				if (h.cooldownI > 0)
+				{
+					h.cooldownI--;
+				}
+				if (h.cooldownO > 0)
+				{
+					if (h.aphero > 0 && h.cooldownO == 400)
+					{
+						h.aphero = 0;
+					}
+					h.cooldownO--;
+				}
+				if (h.cooldownP > 0)
+				{
+					h.cooldownP--;
+				}
+				if (h.cooldownU > 0)
+				{
+					h.cooldownU--;
+				}
+				if (b.MoveCooldown > 0)
+				{
+					b.MoveCooldown--;
+				}
+				h.UI(x, b.boss, b.hpboss);
+				Disp(x);
+				if (h.ctj == 6 || h.ctdj == 5)
+				{
+					h.tf = 0;
+					h.fall(x, elestate);
+				}
+				if (x[h.rhero + 2][h.chero] != ' ' || x[h.rhero + 1][h.chero + h.dir] != ' ')
+				{
+					h.ctj = 0;
+					h.ctdj = 0;
+				}
+				if (h.tf == 1)
+				{
+					if (h.ctw == 1)
+					{
+						if (x[h.rhero - 1][h.chero] != ' ' || x[h.rhero - 1][h.chero + h.dir] != ' ')
+						{
+							h.ctj = 5;
+						}
+						if (h.ctj < 5)
+						{
+							h.rhero--;
+						}
+						h.ctj++;
+					}
+					if (h.ctw == 2)
+					{
+						if (x[h.rhero - 1][h.chero] != ' ' || x[h.rhero - 1][h.chero + h.dir] != ' ')
+						{
+							h.ctdj = 4;
+						}
+						if (h.ctdj < 4)
+						{
+							h.rhero--;
+						}
+						h.ctdj++;
+					}
+				}
+				h.fall(x, elestate);
+			}
+			if (h.hphero > 0)
+			{
+				inpt = _getch();
+				h.Action(x, inpt, laser, m.map, nextmap, Checkpoint, ce, m.Level, fb.grab);
+				h.DrawHero(x);
+			}
+			else
+			{
+				m.map = -3;
+			}
+		}
+	}
+}

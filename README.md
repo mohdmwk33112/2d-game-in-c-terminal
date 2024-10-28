@@ -1,5 +1,3 @@
-# 2d-game-in-c-terminal
-
 # GameProject:
 
 Mohammed Wael:
