@@ -1,6 +1,6 @@
 # GameProject:
 
-Mohammed Wael ():
+Mohammed Wael (https://github.com/mohdmwk33112):
 
 Hero:
 - jump
@@ -16,7 +16,7 @@ Map:
 {will make:mini boss:-cowboy}
 
 
-Ayad Zewail:
+Ayad Zewail (https://github.com/AyadZewail):
 
 Hero:
 - Movement
@@ -38,7 +38,7 @@ Map:
 - Level Progression
 
 
-Mohab Wagdy:
+Mohab Wagdy (https://github.com/Scorpy253):
 
 Hero:
 - Armour
